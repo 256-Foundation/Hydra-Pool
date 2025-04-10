@@ -21,7 +21,6 @@
 	"mindiff": 1,
 	"startdiff": 1,
 	"maxdiff": 0,
-	"maxclients": 1,
 	"zmqblock": "tcp://bitcoind:28332",
 	"logdir": "/tmp/logs",
 	"btcnetwork": "signet"
