@@ -1,0 +1,38 @@
+# Build stage
+FROM rust:1.83-slim-bullseye
+
+# Install required build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    clang \
+    pkg-config \
+    libzmq3-dev \
+    git \
+    cmake \
+    libzstd-dev \
+    libsnappy-dev \
+    libbz2-dev \
+    liblz4-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Build and install RocksDB
+RUN git clone --depth 1 --branch v7.10.2 https://github.com/facebook/rocksdb.git && \
+    cd rocksdb && \
+    PORTABLE=1 make -j$(nproc) shared_lib && \
+    cp librocksdb.so* /usr/lib/ && \
+    cp -r include/rocksdb /usr/include/ && \
+    cd .. && \
+    rm -rf rocksdb
+
+WORKDIR /p2pool
+
+RUN git clone --depth 1 --branch main https://github.com/pool2win/p2pool-v2.git .
+
+# Build p2pool
+RUN cargo build --release
+
+ENV RUST_LOG=info
+
+ENTRYPOINT [ ]
+CMD [] 
