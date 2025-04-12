@@ -20,6 +20,11 @@ services:
       start_period: 10s
     networks:
       - hydrapool_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
 
   cpuminer:
     build:
@@ -31,6 +36,11 @@ services:
     restart: unless-stopped
     networks:
       - hydrapool_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
 
   ckpool-hydra-solo:
     build:
@@ -52,6 +62,11 @@ services:
       start_period: 10s
     networks:
       - hydrapool_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
 
   hydrapool:
     build:
@@ -72,6 +87,11 @@ services:
     restart: unless-stopped
     networks:
       - hydrapool_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
 
 volumes:
   bitcoin_data:
