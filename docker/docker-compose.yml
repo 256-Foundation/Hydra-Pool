@@ -68,14 +68,14 @@ services:
       - RUST_LOG=info
     command: /p2pool/target/release/p2poolv2 --config=/p2pool/config.toml
     volumes:
-      - p2pool_data:/data
+      - hydrapool_data:/data
     restart: unless-stopped
     networks:
       - hydrapool_network
 
 volumes:
   bitcoin_data:
-  p2pool_data:
+  hydrapool_data:
 
 
 networks:
