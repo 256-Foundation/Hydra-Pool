@@ -59,6 +59,11 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha
+          labels: |
+            org.opencontainers.image.description=Hydrapool ${{ matrix.component }} image
+            org.opencontainers.image.vendor=${{ env.ORGANIZATION }}
+            org.opencontainers.image.licenses=GPL-3.0
+            org.opencontainers.image.visibility=public
 
       - name: Build and push
         uses: docker/build-push-action@v3
