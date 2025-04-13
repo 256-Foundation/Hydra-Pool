@@ -53,7 +53,7 @@ services:
       bitcoind:
         condition: service_healthy
     restart: unless-stopped
-    command: /ckpool/src/ckpool --btcsolo --config=/ckpool-hydra-${NETWORK:-signet}.json --log-shares --loglevel=7
+    command: /usr/local/bin/ckpool --btcsolo --config=/ckpool-hydra-${NETWORK:-signet}.json --log-shares --loglevel=7
     healthcheck:
       test: [ "CMD", "nc", "-z", "localhost", "3333" ]
       interval: 5s

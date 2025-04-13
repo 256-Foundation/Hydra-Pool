@@ -1,4 +1,4 @@
-# Use Debian Bullseye as the base image as alipine does not support fenv.h
+# Use Debian Bullseye as the base image as alpine does not support fenv.h
 FROM ubuntu:latest AS builder
 
 # Install build dependencies
@@ -28,23 +28,30 @@ RUN ./autogen.sh
 RUN ./configure
 RUN make -j$(nproc)
 
-# Create ckpool user
-RUN useradd -r -s /bin/false ckpool
+# Second stage: Runtime image
+FROM ubuntu:latest
+
+# Install only the runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libjansson4 \
+    libcurl4 \
+    libzmq5 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create data directory
-RUN mkdir /data
-RUN mkdir /logs
-RUN chown ckpool:ckpool /data
-RUN chown ckpool:ckpool /logs
+RUN mkdir /data /logs
+
+# Copy only the necessary files from builder
+COPY --from=builder /ckpool/src/ckpool /usr/local/bin/ckpool
+COPY --from=builder /ckpool/src/*.so /usr/local/lib/
+
+# Copy config files
 COPY signet/ckpool-hydra-signet.json /ckpool-hydra-signet.json
 COPY testnet4/ckpool-hydra-testnet4.json /ckpool-hydra-testnet4.json
-
-USER ckpool
-VOLUME ["/data"]
 
 # 3333 is the port for the ckpool-solo server
 # 8881 is the port for ZMQ pub socket
 EXPOSE 3333 8881
 
 ENTRYPOINT []
-CMD ["src/ckpool"]
+CMD ["/usr/local/bin/ckpool"]

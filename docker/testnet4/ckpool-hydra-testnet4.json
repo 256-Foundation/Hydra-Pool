@@ -22,6 +22,6 @@
 	"startdiff": 1,
 	"maxdiff": 0,
 	"zmqblock": "tcp://bitcoind:28332",
-	"logdir": "/logs",
+	"logsdir": "/var/log/ckpool-hydra",
 	"btcnetwork": "testnet4"
 }
