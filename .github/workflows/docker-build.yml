@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  ORGANIZATION: pool2win
+  ORGANIZATION: 256-foundation
 
 jobs:
   build:
