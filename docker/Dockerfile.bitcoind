@@ -1,4 +1,5 @@
-FROM alpine:latest
+# Stage 1: Build Bitcoin Core
+FROM alpine:latest AS builder
 
 # Install build dependencies
 RUN apk add --no-cache \
@@ -20,12 +21,15 @@ RUN git clone --depth 1 --branch v28.0 https://github.com/bitcoin/bitcoin.git /b
 
 # Build Bitcoin Core
 WORKDIR /bitcoin
-RUN ./autogen.sh
-RUN ./configure --with-miniupnpc=no --without-gui --disable-tests --disable-bench
-RUN make -j$(nproc)
-RUN make install
+RUN ./autogen.sh && \
+    ./configure --with-miniupnpc=no --without-gui --disable-tests --disable-bench && \
+    make -j$(nproc) && \
+    make install
 
-# Install runtime dependencies
+# Stage 2: Create minimal runtime image
+FROM alpine:latest
+
+# Install runtime dependencies only
 RUN apk add --no-cache \
     boost-system \
     boost-filesystem \
@@ -35,13 +39,23 @@ RUN apk add --no-cache \
     libstdc++ \
     sqlite-libs
 
-# Create bitcoin user
-RUN adduser -S bitcoin
-RUN addgroup -S bitcoin
+# Create bitcoin user and group
+RUN adduser -S bitcoin && \
+    addgroup -S bitcoin
 
 # Create data directory
-RUN mkdir /data
-RUN chown bitcoin:bitcoin /data
+RUN mkdir /data && \
+    chown bitcoin:bitcoin /data
+
+# Copy bitcoin binaries from builder stage
+COPY --from=builder /usr/local/bin/bitcoin* /usr/local/bin/
+
+# Create config directory
+RUN mkdir -p /etc/bitcoin
+
+# Copy configuration files
+COPY signet/bitcoin-signet.conf /etc/bitcoin/
+COPY testnet4/bitcoin-testnet4.conf /etc/bitcoin/
 
 USER bitcoin
 VOLUME ["/data"]
@@ -52,8 +66,5 @@ EXPOSE 38332 38333
 # Ports for testnet4
 EXPOSE 48332 48333
 
-COPY signet/bitcoin-signet.conf /etc/bitcoin/
-COPY testnet4/bitcoin-testnet4.conf /etc/bitcoin/
-
 ENTRYPOINT []
-CMD ["/bitcoin/bitcoind"]
+CMD ["bitcoind"]
