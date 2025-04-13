@@ -1,5 +1,5 @@
 # Build stage
-FROM rust:1.83-slim-bullseye
+FROM rust:1.83-slim-bullseye AS builder
 
 # Install required build dependencies
 RUN apt-get update && apt-get install -y \
@@ -32,7 +32,35 @@ RUN git clone --depth 1 --branch main https://github.com/pool2win/p2pool-v2.git 
 # Build p2pool
 RUN cargo build --release
 
+# Runtime stage
+FROM debian:bullseye-slim
+
+# Install minimal runtime dependencies only (not dev packages)
+RUN apt-get update && apt-get install -y \
+    libzmq5 \
+    libzstd1 \
+    libsnappy1v5 \
+    libbz2-1.0 \
+    liblz4-1 \
+    zlib1g \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create directory for p2pool
+WORKDIR /p2pool
+
+# Copy RocksDB shared libraries from builder
+COPY --from=builder /usr/lib/librocksdb.so* /usr/lib/
+
+# Copy the compiled binary and set permissions
+COPY --from=builder /p2pool/target/release/p2poolv2 /usr/local/bin/
+RUN chmod +x /usr/local/bin/p2poolv2
+
+# Copy configuration file from local environment to container
+COPY --from=builder /p2pool/config.toml /p2pool/config.toml
+
+# Set environment variables
 ENV RUST_LOG=info
 
-ENTRYPOINT [ ]
-CMD [] 
+ENTRYPOINT []
+CMD []

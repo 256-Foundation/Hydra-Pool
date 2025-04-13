@@ -81,7 +81,7 @@ services:
       - P2POOL_STORE_PATH=/data/${NETWORK:-signet}
       - P2POOL_CKPOOL_HOST=ckpool-hydra-solo
       - RUST_LOG=info
-    command: /p2pool/target/release/p2poolv2 --config=/p2pool/config.toml
+    command: /usr/local/bin/p2poolv2 --config=/p2pool/config.toml
     volumes:
       - hydrapool_data:/data
     restart: unless-stopped
