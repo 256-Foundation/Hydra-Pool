@@ -42,10 +42,10 @@ services:
         max-size: "100m"
         max-file: "3"
 
-  ckpool-hydra-solo:
+  hydrapool-ckpool:
     build:
       context: .
-      dockerfile: Dockerfile.ckpool-hydra-solo
+      dockerfile: Dockerfile.hydrapool-ckpool
     ports:
       - "3333:3333"
       - "8881:8881"
@@ -74,12 +74,12 @@ services:
       dockerfile: Dockerfile.p2pool
     depends_on:
       - bitcoind
-      - ckpool-hydra-solo
+      - hydrapool-ckpool
     environment:
       - P2POOL_BITCOIN_NETWORK=${NETWORK:-signet}
       - P2POOL_BITCOIN_URL=bitcoind:${BTC_RPC_PORT:-38332}
       - P2POOL_STORE_PATH=/data/${NETWORK:-signet}
-      - P2POOL_CKPOOL_HOST=ckpool-hydra-solo
+      - P2POOL_CKPOOL_HOST=hydrapool-ckpool
       - RUST_LOG=info
     command: /usr/local/bin/p2poolv2 --config=/p2pool/config.toml
     volumes:

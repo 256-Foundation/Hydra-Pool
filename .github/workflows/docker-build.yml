@@ -21,13 +21,13 @@ jobs:
     
     strategy:
       matrix:
-        component: [bitcoind, ckpool-hydra-solo, p2pool]
+        component: [bitcoind, hydrapool-ckpool, p2pool]
         include:
           - component: bitcoind
             dockerfile: docker/Dockerfile.bitcoind
             context: docker/
-          - component: ckpool-hydra-solo
-            dockerfile: docker/Dockerfile.ckpool-hydra-solo
+          - component: hydrapool-ckpool
+            dockerfile: docker/Dockerfile.hydrapool-ckpool
             context: docker/
           - component: p2pool
             dockerfile: docker/Dockerfile.p2pool
