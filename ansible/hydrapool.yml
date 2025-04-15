@@ -187,9 +187,12 @@
         daemon_reload: yes
 
     - name: Wait for ckpool to be ready
-      wait_for:
-        timeout: 30
-      when: false  # This is a placeholder, replace with actual health check
+      shell: "nc -z localhost 8881"
+      register: ckpool_check
+      until: ckpool_check.rc == 0
+      retries: 10
+      delay: 5
+      changed_when: false
 
     - name: Enable and start p2pool service
       systemd:
