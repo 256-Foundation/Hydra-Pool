@@ -1,0 +1,29 @@
+[Unit]
+Description=Hydra Pool Bitcoin Daemon ({{ network }})
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStartPre=-/usr/bin/docker pull ghcr.io/256-foundation/hydrapool-bitcoind:{{bitcoind_image_tag}}
+ExecStart=/usr/bin/docker run --rm --name hydrapool-bitcoind \
+  --network hydrapool_network \
+  -p {{ btc_p2p_port }}:{{ btc_p2p_port }} \
+  -p {{ btc_rpc_port }}:{{ btc_rpc_port }} \
+  -u root \
+  -v {{ data_dir }}/bitcoin-{{ network }}:/data \
+  -v {{ data_dir }}/bitcoin-{{ network }}/bitcoin-{{ network }}.conf:/etc/bitcoin/bitcoin-{{ network }}.conf:ro \
+  -e NETWORK={{ network }} \
+  ghcr.io/256-foundation/hydrapool-bitcoind:{{bitcoind_image_tag}} \
+  bitcoind -conf=/etc/bitcoin/bitcoin-{{ network }}.conf -datadir=/data/
+ExecStop=/usr/bin/docker stop hydrapool-bitcoind
+Restart=always
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hydrapool-bitcoind
+
+[Install]
+WantedBy=multi-user.target

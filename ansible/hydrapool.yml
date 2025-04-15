@@ -1,0 +1,204 @@
+---
+- name: Deploy Hydra Pool Services
+  hosts: hydrapool_servers
+  become: true
+  vars:
+    network: "{{ hostvars['localhost']['network'] | default('signet') }}"
+    btc_p2p_port: "{{ '38333' if network == 'signet' else '48333' }}"
+    btc_rpc_port: "{{ '38332' if network == 'signet' else '48332' }}"
+    data_dir: "/var/lib/hydrapool"
+    log_dir: "/var/log/hydrapool"
+
+  pre_tasks:
+    # Minimal bootstrap to ensure Python is available
+    - name: Check if Python is installed
+      raw: command -v python3 || command -v python
+      register: python_check
+      changed_when: false
+      failed_when: python_check.rc != 0
+      
+    # Use Ansible's package module which is OS-agnostic
+    - name: Install Python and basic dependencies
+      package:
+        name:
+          - "{{ python_pkg }}"
+          - "{{ python_setuptools_pkg }}"
+          - "{{ python_pip_pkg }}"
+        state: present
+      vars:
+        python_pkg: "{{ 'python3' if ansible_os_family in ['Debian', 'RedHat', 'Suse'] else 'python' }}"
+        python_setuptools_pkg: "{{ 'python3-setuptools' if ansible_os_family in ['Debian', 'RedHat', 'Suse'] else 'python-setuptools' }}"
+        python_pip_pkg: "{{ 'python3-pip' if ansible_os_family in ['Debian', 'RedHat', 'Suse'] else 'python-pip' }}"
+      
+    # Install specific package manager modules based on OS
+    - name: Install apt Python module (Debian)
+      package:
+        name: python3-apt
+        state: present
+      when: ansible_os_family == "Debian"
+      
+    - name: Install dnf Python module (RedHat)
+      package:
+        name: python3-dnf
+        state: present
+      when: ansible_os_family == "RedHat"
+      
+  tasks:
+    # Use package module for cross-platform compatibility when possible
+    - name: Install required common packages
+      package:
+        name:
+          - ca-certificates
+          - curl 
+          - gnupg
+        state: present
+        update_cache: yes
+        
+    # OS-specific package installations
+    - name: Install Debian-specific packages
+      apt:
+        name:
+          - apt-transport-https
+          - lsb-release
+          - netcat
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+      
+    - name: Install RedHat-specific packages
+      dnf:
+        name:
+          - nc  # netcat
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "RedHat"
+      
+    - name: Install Arch-specific packages
+      pacman:
+        name:
+          - openbsd-netcat
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Archlinux"
+      
+    - name: Install SUSE-specific packages
+      zypper:
+        name:
+          - netcat
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Suse"
+
+    # Docker installation using Ansible package module
+    - name: Install Docker using package module
+      package:
+        name: docker
+        state: present
+      
+    - name: Install Docker Python module
+      pip:
+        name: docker
+        state: present
+        
+    - name: Enable and start Docker service
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Create data directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - "{{ data_dir }}/bitcoin-{{ network }}"
+        - "{{ data_dir }}/hydrapool"
+        - "{{ log_dir }}"
+
+    - name: Create Docker network
+      docker_network:
+        name: hydrapool_network
+        state: present
+
+    # Copy Bitcoin configuration
+    - name: Copy Bitcoin configuration file template
+      template:
+        src: bitcoin-{{ network }}.conf.j2
+        dest: "{{ data_dir }}/bitcoin-{{ network }}/bitcoin-{{ network }}.conf"
+        mode: '0644'
+
+    # Copy CKPool configuration
+    - name: Copy CKPool configuration file template
+      template:
+        src: ckpool-hydra-{{ network }}.json.j2
+        dest: "{{ data_dir }}/ckpool-hydra-{{ network }}.json"
+        mode: '0644'
+
+    # Copy P2Pool configuration
+    - name: Copy P2Pool configuration file template
+      template:
+        src: p2pool-config.toml.j2
+        dest: "{{ data_dir }}/p2pool-config.toml"
+        mode: '0644'
+
+    # Create systemd service files
+    - name: Create bitcoind service file
+      template:
+        src: bitcoind.service.j2
+        dest: /etc/systemd/system/hydrapool-bitcoind.service
+        mode: '0644'
+      notify: Reload systemd
+
+    - name: Create ckpool service file
+      template:
+        src: ckpool.service.j2
+        dest: /etc/systemd/system/hydrapool-ckpool.service
+        mode: '0644'
+      notify: Reload systemd
+
+    - name: Create p2pool service file
+      template:
+        src: p2pool.service.j2
+        dest: /etc/systemd/system/hydrapool-p2pool.service
+        mode: '0644'
+      notify: Reload systemd
+
+    # Start and enable services
+    - name: Enable and start bitcoind service
+      systemd:
+        name: hydrapool-bitcoind
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: Wait for bitcoind to be ready
+      wait_for:
+        host: localhost
+        port: "{{ btc_p2p_port }}"
+        state: started
+        timeout: 300
+
+    - name: Enable and start ckpool service
+      systemd:
+        name: hydrapool-ckpool
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: Wait for ckpool to be ready
+      wait_for:
+        timeout: 30
+      when: false  # This is a placeholder, replace with actual health check
+
+    - name: Enable and start p2pool service
+      systemd:
+        name: hydrapool-p2pool
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+  handlers:
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
