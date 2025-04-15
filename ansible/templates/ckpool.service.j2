@@ -1,0 +1,27 @@
+[Unit]
+Description=Hydra Pool CKPool Service ({{ network }})
+After=hydrapool-bitcoind.service
+Requires=hydrapool-bitcoind.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStartPre=-/usr/bin/docker pull ghcr.io/256-foundation/hydrapool-ckpool:{{ckpool_image_tag}}
+ExecStart=/usr/bin/docker run --rm --name hydrapool-ckpool \
+  --network hydrapool_network \
+  -p 3333:3333 \
+  -p 8881:8881 \
+  -v {{ data_dir }}/ckpool-hydra-{{ network }}.json:/ckpool-hydra-{{ network }}.json:ro \
+  -v {{ log_dir }}/ckpool/{{ network }}:/logs \
+  ghcr.io/256-foundation/hydrapool-ckpool:{{ckpool_image_tag}} \
+  /usr/local/bin/ckpool --btcsolo --config=/ckpool-hydra-{{ network }}.json --log-shares --loglevel=7
+ExecStop=/usr/bin/docker stop hydrapool-ckpool
+Restart=always
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hydrapool-ckpool
+
+[Install]
+WantedBy=multi-user.target
