@@ -60,7 +60,8 @@
         name:
           - apt-transport-https
           - lsb-release
-          - netcat
+          - netcat-openbsd
+          - python3-venv  # Ensure python3-venv is installed
         state: present
         update_cache: yes
       when: ansible_os_family == "Debian"
@@ -92,14 +93,22 @@
     # Docker installation using Ansible package module
     - name: Install Docker using package module
       package:
-        name: docker
+        name: docker-ce
         state: present
       
-    - name: Install Docker Python module
-      pip:
-        name: docker
-        state: present
-        
+    - name: Create a Python virtual environment
+      command: python3 -m venv /opt/hydrapool_venv --system-site-packages
+      args:
+        creates: /opt/hydrapool_venv
+
+    - name: Ensure pip is installed in the virtual environment
+      command: /opt/hydrapool_venv/bin/python -m ensurepip
+      args:
+        creates: /opt/hydrapool_venv/bin/pip
+
+    - name: Install Docker Python module in virtual environment
+      command: /opt/hydrapool_venv/bin/pip3 install docker
+
     - name: Enable and start Docker service
       systemd:
         name: docker
