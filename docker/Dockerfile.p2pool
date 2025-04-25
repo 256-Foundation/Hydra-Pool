@@ -27,7 +27,8 @@ RUN git clone --depth 1 --branch v7.10.2 https://github.com/facebook/rocksdb.git
 
 WORKDIR /p2pool
 
-RUN git clone --depth 1 --branch main https://github.com/pool2win/p2pool-v2.git .
+# Clone the p2pool repository at the specified version
+RUN git clone --depth 1 --branch v0.1.0 https://github.com/pool2win/p2pool-v2.git .
 
 # Build p2pool
 RUN cargo build --release
