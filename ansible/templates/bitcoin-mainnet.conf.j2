@@ -1,0 +1,43 @@
+##
+## bitcoin.conf configuration file for signet network
+##
+
+# Basic network configuration
+port={{ btc_p2p_port }}
+
+# Block filters and indexes
+blockfilterindex=basic
+coinstatsindex=1
+txindex=1
+
+# Memory and cache settings
+dbcache=4096
+maxmempool=500
+persistmempool=1
+
+# RPC configuration
+rpcuser=p2pool
+rpcpassword=p2pool
+rpcallowip=0.0.0.0/0
+rpcbind=0.0.0.0:{{ btc_rpc_port }}
+rpcport={{ btc_rpc_port }}
+server=1
+
+# Disable Tor onion service to simplify deployment
+listenonion=0
+
+# ZeroMQ settings
+zmqpubhashblock=tcp://127.0.0.1:28332
+
+# Debug settings for better logs
+debug=all
+debugexclude=libevent
+debugexclude=rpc
+debugexclude=http
+debugexclude=bench
+debugexclude=net
+
+[main]
+rpcbind=0.0.0.0
+rpcport={{ btc_rpc_port }}
+port={{ btc_p2p_port }}
