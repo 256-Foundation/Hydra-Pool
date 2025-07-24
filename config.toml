@@ -1,0 +1,49 @@
+[network]
+listen_address = "/ip4/127.0.0.1/tcp/6884"
+dial_peers = []
+max_pending_incoming = 10
+max_pending_outgoing = 10
+max_established_incoming = 50
+max_established_outgoing = 50
+max_established_per_peer = 1
+max_workbase_per_second = 10
+max_userworkbase_per_second = 10
+max_miningshare_per_second = 100
+max_inventory_per_second = 100
+max_transaction_per_second = 100
+rate_limit_window_secs = 1
+max_requests_per_second = 1
+peer_inactivity_timeout_secs = 60
+
+[store]
+path = "./store.db"
+
+[ckpool]
+host = "localhost"
+port = 8881
+
+[stratum]
+hostname = "0.0.0.0"
+port = 3333
+start_difficulty = 1
+minimum_difficulty = 1
+solo_address = "tb1qyazxde6558qj6z3d9np5e6msmrspwpf6k0qggk"
+zmqpubhashblock = "tcp://127.0.0.1:28332"
+# The network can be "main", "testnet4" or "signet"
+network = "signet"
+version_mask = "1fffe000"
+
+# We don't need the miner pubkey for hydrapool testing, but leaving it in as we are reusing config module from p2pool_lib
+[miner]
+pubkey = "020202020202020202020202020202020202020202020202020202020202020202"
+
+[bitcoinrpc]
+# RPC credentials are loaded from env vars
+url = "http://127.0.0.1:38332"
+username = "p2pool"
+password = "p2pool"
+
+[logging]
+# Specify a file path for the log file, if no log file is specified, console logging will be used
+# file = "./hydrapool.log"
+level = "debug"

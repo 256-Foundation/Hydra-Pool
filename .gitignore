@@ -1,1 +1,4 @@
+/target
+store*.db
+p2pool.log
 .env
