@@ -12,13 +12,15 @@ We are running an test instance of hydrapool using a private signet network. All
 
 Stratum server details: `stratum+tcp://test.hydrapool.org:3333`
 
-
 We will capture the stratum interaction, if it passes we will mark the self identified hardware as passing and we will credit you with helping us test for that hardware.
 
 We publish a list of users who helped us test and which devices they helped test with on https://test.hydrapool.org. 
 
-If the stratum session fails, we will have the interaction available in our logs and we can try and make the changes to our stratum implementation. Once the changes are released we will announce it on the [256 Foundation Telegram group](https://t.me/the256foundation). 
+If the stratum session fails, we will have the interaction available in our logs and we can try and make the changes to our stratum implementation. Once the changes are released we will announce it on the [256 Foundation Telegram group](https://t.me/the256foundation).
 
+## Bitaxe Users
+
+Please upgrade to Bitaxe firmware v2.9.0 or higher. There are issues with older versions that result in disconnections from hydrapool and reconnect.
 
 # Development Status
 
