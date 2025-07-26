@@ -146,9 +146,6 @@ async fn main() -> Result<(), String> {
         .await;
     });
 
-    debug!("Starting Stratum server...aaa");
-
-    debug!("Starting Stratum server...xxx");
     let mut stratum_server = StratumServer::new(
         stratum_config,
         stratum_shutdown_rx,
