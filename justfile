@@ -13,4 +13,4 @@ build-release:
 
 # For log level use RUST_LOG=<<level>> just run
 run config="config.toml":
-	RUST_LOG={{LOG_LEVEL}} cargo run -p p2poolv2 -- --config={{config}}
+	RUST_LOG={{LOG_LEVEL}} cargo run -- --config={{config}}
