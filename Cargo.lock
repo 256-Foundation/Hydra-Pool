@@ -440,6 +440,7 @@ dependencies = [
  "jsonrpsee",
  "serde",
  "serde_json",
+ "tokio",
  "tracing",
  "tracing-subscriber",
  "wiremock",
