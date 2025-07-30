@@ -46,5 +46,5 @@ password = "p2pool"
 
 [logging]
 # Specify a file path for the log file, if no log file is specified, console logging will be used
-# file = "./hydrapool.log"
+file = "./logs/hydrapool.log"
 level = "debug"

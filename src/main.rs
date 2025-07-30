@@ -16,9 +16,8 @@
 
 use bitcoin::Address;
 use clap::Parser;
-use p2poolv2_lib::config::{Config, LoggingConfig};
-use std::error::Error;
-use std::fs::File;
+use p2poolv2_lib::config::Config;
+use p2poolv2_lib::logging::setup_logging;
 use std::process::exit;
 use std::str::FromStr;
 use stratum::server::StratumServer;
@@ -27,7 +26,6 @@ use stratum::work::tracker::start_tracker_actor;
 use stratum::zmq_listener::{ZmqListener, ZmqListenerTrait};
 use tracing::error;
 use tracing::info;
-use tracing_subscriber::{EnvFilter, Registry, fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
 /// Interval in seconds to poll for new block templates since the last blocknotify signal
 const GBT_POLL_INTERVAL: u64 = 60; // seconds
@@ -40,36 +38,6 @@ pub const SOCKET_PATH: &str = "/tmp/p2pool_blocknotify.sock";
 struct Args {
     #[arg(short, long)]
     config: String,
-}
-
-/// Sets up logging according to the logging configuration
-fn setup_logging(logging_config: &LoggingConfig) -> Result<(), Box<dyn Error>> {
-    let filter =
-        EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(&logging_config.level));
-
-    let registry = Registry::default().with(filter);
-
-    // Configure console logging if enabled
-    if let Some(file_path) = &logging_config.file {
-        info!("File logging is enabled, writing to: {}", file_path);
-        // Create directory structure if it doesn't exist
-        if let Some(parent) = std::path::Path::new(file_path).parent() {
-            std::fs::create_dir_all(parent)?;
-        }
-        // Configure file logging if specified
-        let file = File::options().append(true).create(true).open(file_path)?;
-        let file_layer = fmt::layer().with_writer(file).with_ansi(false);
-
-        registry.with(file_layer).init();
-    } else {
-        info!("No logging configuration provided, defaulting to console");
-        // If neither console nor file is configured, default to console
-        let console_layer = fmt::layer();
-        registry.with(console_layer).init();
-    }
-
-    info!("Logging initialized");
-    Ok(())
 }
 
 #[tokio::main]
@@ -87,10 +55,18 @@ async fn main() -> Result<(), String> {
     }
     let config = config.unwrap();
     // Configure logging based on config
-    if let Err(e) = setup_logging(&config.logging) {
-        error!("Failed to set up logging: {}", e);
-        return Err(format!("Failed to set up logging: {e}"));
-    }
+    let logging_result = setup_logging(&config.logging);
+    // hold guard to ensure logging is set up correctly
+    let _guard = match logging_result {
+        Ok(guard) => {
+            info!("Logging set up successfully");
+            guard
+        }
+        Err(e) => {
+            error!("Failed to set up logging: {e}");
+            return Err(format!("Failed to set up logging: {e}"));
+        }
+    };
 
     let stratum_config = config.stratum.clone();
     let bitcoinrpc_config = config.bitcoinrpc.clone();

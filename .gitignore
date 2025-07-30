@@ -2,3 +2,4 @@
 store*.db
 p2pool.log
 .env
+logs/*
