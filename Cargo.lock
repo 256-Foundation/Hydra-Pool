@@ -433,6 +433,7 @@ dependencies = [
 [[package]]
 name = "bitcoindrpc"
 version = "0.1.0"
+source = "git+https://github.com/pool2win/p2pool-v2#aef905dd5b5b38148d0a0cf4d51635fd056f2d93"
 dependencies = [
  "base64 0.22.1",
  "bitcoin",
@@ -3058,6 +3059,7 @@ checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 [[package]]
 name = "p2poolv2_lib"
 version = "0.1.0"
+source = "git+https://github.com/pool2win/p2pool-v2#aef905dd5b5b38148d0a0cf4d51635fd056f2d93"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -4213,6 +4215,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "stratum"
 version = "0.1.0"
+source = "git+https://github.com/pool2win/p2pool-v2#aef905dd5b5b38148d0a0cf4d51635fd056f2d93"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
