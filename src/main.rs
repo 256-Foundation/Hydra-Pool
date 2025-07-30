@@ -26,7 +26,7 @@ use stratum::work::gbt::start_gbt;
 use stratum::work::tracker::start_tracker_actor;
 use stratum::zmq_listener::{ZmqListener, ZmqListenerTrait};
 use tracing::error;
-use tracing::{debug, info};
+use tracing::info;
 use tracing_subscriber::{EnvFilter, Registry, fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
 /// Interval in seconds to poll for new block templates since the last blocknotify signal
