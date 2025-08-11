@@ -16,6 +16,6 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 bitcoin = { version = "0.32.5", features = ["serde", "rand"] }
 tokio = { version = "1.0", features = ["full"] }
-p2poolv2_lib = { git = "https://github.com/pool2win/p2pool-v2", package = "p2poolv2_lib", rev = "5442241" }
-stratum = { git = "https://github.com/pool2win/p2pool-v2", package = "stratum", rev = "5442241" }
-bitcoindrpc = { git = "https://github.com/pool2win/p2pool-v2", package = "bitcoindrpc", rev = "5442241" }
+p2poolv2_lib = { git = "https://github.com/pool2win/p2pool-v2", package = "p2poolv2_lib", tag = "hydrapool" }
+stratum = { git = "https://github.com/pool2win/p2pool-v2", package = "stratum", tag = "hydrapool" }
+bitcoindrpc = { git = "https://github.com/pool2win/p2pool-v2", package = "bitcoindrpc", tag = "hydrapool" }

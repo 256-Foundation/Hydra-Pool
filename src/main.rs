@@ -87,7 +87,7 @@ async fn main() -> Result<(), String> {
 
     tokio::spawn(async move {
         if let Err(e) = start_gbt(
-            &bitcoinrpc_config_cloned,
+            bitcoinrpc_config_cloned,
             notify_tx_for_gbt,
             SOCKET_PATH,
             GBT_POLL_INTERVAL,
@@ -101,7 +101,7 @@ async fn main() -> Result<(), String> {
         }
     });
 
-    let connections_handle = stratum::client_connections::spawn().await;
+    let connections_handle = stratum::client_connections::start_connections_handler().await;
     let connections_cloned = connections_handle.clone();
 
     let output_address = Address::from_str(stratum_config.solo_address.clone().unwrap().as_str())
