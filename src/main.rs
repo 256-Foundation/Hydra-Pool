@@ -15,6 +15,7 @@
 // Hydra-Pool. If not, see <https://www.gnu.org/licenses/>.
 
 use bitcoin::Address;
+use bitcoin::p2p::message_compact_blocks::CmpctBlock;
 use clap::Parser;
 use p2poolv2_lib::config::Config;
 use p2poolv2_lib::logging::setup_logging;
@@ -122,10 +123,13 @@ async fn main() -> Result<(), String> {
         .await;
     });
 
+    let (shares_tx, _shares_rx) = tokio::sync::mpsc::channel::<CmpctBlock>(10);
+
     let mut stratum_server = StratumServer::new(
         stratum_config,
         stratum_shutdown_rx,
         connections_handle.clone(),
+        shares_tx,
     )
     .await;
     info!("Starting Stratum server...");
