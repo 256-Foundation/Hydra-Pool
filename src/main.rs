@@ -129,7 +129,6 @@ async fn main() -> Result<(), String> {
         stratum_config,
         stratum_shutdown_rx,
         connections_handle.clone(),
-        shares_tx,
     )
     .await;
     info!("Starting Stratum server...");

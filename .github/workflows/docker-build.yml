@@ -16,7 +16,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
+
     strategy:
       matrix:
         component: [bitcoind, ckpool, p2pool]
@@ -30,6 +30,9 @@ jobs:
           - component: p2pool
             dockerfile: docker/Dockerfile.p2pool
             context: docker/
+          - component: server
+            dockerfile: docker/Dockerfile.hydrapool
+            context: .
 
     steps:
       - name: Checkout code
@@ -45,7 +48,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v4

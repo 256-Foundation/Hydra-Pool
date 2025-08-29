@@ -1,0 +1,35 @@
+FROM rust:1.89-slim-bookworm AS builder
+
+# Install dependencies required for zeromq-src, zstd-sys, and bindgen
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libbsd-dev \
+    build-essential \
+    pkg-config \
+    libzstd-dev \
+    clang \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/src/app
+
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+
+RUN cargo build --release
+
+# Create a minimal distribution image
+FROM debian:stable-slim
+
+WORKDIR /app
+
+COPY --from=builder /usr/src/app/target/release/hydrapool /app/hydrapool
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libbsd0 \
+    libzstd1 \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# EXPOSE 8080 # TODO(adam)
+
+ENTRYPOINT ["/app/hydrapool"]
