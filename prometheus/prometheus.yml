@@ -21,4 +21,4 @@ scrape_configs:
     metrics_path: "/metrics"
     basic_auth:
       username: 'hydrapool'
-      password: 'IzUM19WV71WdkEWEYJ2u0dKIOv5rI-xL0H9GaRULyO8'
+      password: 'hydrapool'

@@ -1,11 +1,11 @@
 [package]
 name = "hydrapool"
-version = "0.0.1"
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.88.0"
 authors = ["Kulpreet Singh<kp@opdup.com>"]
 license = "AGPLv3"
-description = "Hydrapool - a standalone, open source PPLNS pool for bitcoin"
+description = "Hydrapool - an open source PPLNS pool for bitcoin"
 readme = "README.md"
 homepage = "https://hydrapool.org/"
 repository = "https://github.com/256-Foundation/Hydra-Pool/"
@@ -18,6 +18,11 @@ codegen-units = 1
 lto = "fat"
 strip = "symbols"
 panic = "abort"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
