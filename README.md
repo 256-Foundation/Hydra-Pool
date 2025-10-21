@@ -87,5 +87,22 @@ Then run from target directory.
 ./target/release/hydrapool
 ```
 
+## Run with Docker
 
+We provide Dockerfile and docker compose files to run hydrapool using
+Docker as well.
 
+```bash
+docker compose build hydrapool
+docker compose --profile hydrapool up
+```
+
+Using the profile option we can start hydrapool along with prometheus
+and grafana.
+
+If you don't provide the profile option, hydrapool won't be started
+and only prometheus and grafana will start as normal.
+
+When using docker, be careful that you need to build docker image
+after changes to config. Also you need to make sure your bitcoin RPC
+port is accessible from the docker container.
