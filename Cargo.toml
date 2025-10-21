@@ -19,3 +19,12 @@ tokio = { version = "1.0", features = ["full"] }
 p2poolv2_lib = { git = "https://github.com/pool2win/p2pool-v2", package = "p2poolv2_lib", tag = "hydrapool" }
 stratum = { git = "https://github.com/pool2win/p2pool-v2", package = "stratum", tag = "hydrapool" }
 bitcoindrpc = { git = "https://github.com/pool2win/p2pool-v2", package = "bitcoindrpc", tag = "hydrapool" }
+[[bin]]
+name = "hydrapool"
+test = false
+bench = false
+
+[[bin]]
+name = "hydrapool_cli"
+test = false
+bench = false

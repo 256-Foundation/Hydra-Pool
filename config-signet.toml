@@ -8,19 +8,20 @@ hostname = "0.0.0.0"
 port = 3333
 start_difficulty = 1
 minimum_difficulty = 1
+solo_address = "tb1qyazxde6558qj6z3d9np5e6msmrspwpf6k0qggk"
 # The bitcoin address to use for first jobs when there are no shares
-bootstrap_address = "<your bootstrap address here>"
+bootstrap_address = "tb1qyazxde6558qj6z3d9np5e6msmrspwpf6k0qggk"
 # Any donation amount for developers to be sent to donation address. Default no donation.
-# donation_address = "<your donation address here>"
+donation_address = "tb1qyazxde6558qj6z3d9np5e6msmrspwpf6k0qggk"
 # In basis points, 1% = 100 basis points. Default 0
-# donation = 50
+donation = 50
 # Any fee amount for node/hydrapool provider to be sent to fee address. Default no fee.
-# fee_address = "<your fee address here>"
+fee_address = "tb1qyazxde6558qj6z3d9np5e6msmrspwpf6k0qggk"
 # In basis points, 1% = 100 basis points. Default 0
-# fee = 200
+fee = 200
 zmqpubhashblock = "tcp://127.0.0.1:28332"
 # The network can be "main", "testnet4" or "signet"
-network = "main"
+network = "signet"
 version_mask = "1fffe000"
 # The difficulty multiplier defines the window size for calculating payout proportions
 # See https://github.com/p2poolv2/p2poolv2/wiki/Difficult-Multiplier on how to choose this
@@ -51,5 +52,5 @@ hostname = "0.0.0.0"
 port = 46884
 # Optional authentication credentials
 auth_user = "hydrapool"
-# auth_token is of the format salt:password-hmac. Use can hydrapool_cli gen-auth to generate a token.
-auth_token = "ca0bb5121ea503a12cb17691f65aab24$f1dc7db5d59a89599f00f33d1ca54df64943e3619622a958d968ac227b51d9dd"
+# auth_token is of the format salt:password-hmac. Use can hydrapool_cli to generate a token.
+auth_token = "668d6cecef125b1e306ba6241d421bd9$7ae9ddcc6164303bde89cc663d268758bee59a3a51c2788b42bdcad89a4bb893"
