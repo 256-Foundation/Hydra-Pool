@@ -1,0 +1,48 @@
+# Build stage
+FROM rust:1.88-slim-bullseye
+
+# Install required build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    clang \
+    pkg-config \
+    libzmq3-dev \
+    git \
+    cmake \
+    libzstd-dev \
+    libsnappy-dev \
+    libbz2-dev \
+    liblz4-dev \
+    zlib1g-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Build and install RocksDB
+RUN git clone --depth 1 --branch v7.10.2 https://github.com/facebook/rocksdb.git && \
+    cd rocksdb && \
+    PORTABLE=1 make -j$(nproc) shared_lib && \
+    cp librocksdb.so* /usr/lib/ && \
+    cp -r include/rocksdb /usr/include/ && \
+    cd .. && \
+    rm -rf rocksdb
+
+# Create and set working directory
+RUN mkdir -p /hydrapool
+COPY src/ /hydrapool/src
+COPY Cargo.lock /hydrapool/Cargo.lock
+COPY Cargo.toml /hydrapool/Cargo.toml
+
+ENV RUST_LOG=info
+
+WORKDIR /hydrapool
+
+# Create a minimal source file for the root package. We need a root package in local dev as we have integration tests there.
+
+# Build hydrapool and hydrapool_cli
+RUN cargo build --release
+
+# Copy config after building - for quick config changes
+COPY config.toml /hydrapool/config.toml
+
+ENTRYPOINT [ ]
+CMD [] 

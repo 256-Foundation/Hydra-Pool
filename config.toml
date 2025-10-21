@@ -20,7 +20,7 @@ bootstrap_address = "<your bootstrap address here>"
 # fee = 200
 zmqpubhashblock = "tcp://127.0.0.1:28332"
 # The network can be "main", "testnet4" or "signet"
-network = "main"
+network = "signet"
 version_mask = "1fffe000"
 # The difficulty multiplier defines the window size for calculating payout proportions
 # See https://github.com/p2poolv2/p2poolv2/wiki/Difficult-Multiplier on how to choose this
@@ -52,4 +52,4 @@ port = 46884
 # Optional authentication credentials
 auth_user = "hydrapool"
 # auth_token is of the format salt:password-hmac. Use can hydrapool_cli gen-auth to generate a token.
-auth_token = "781dbcddd95e53aabf940bd2c51f8360$a8f7ddfff9560d506da771096361ba75b9d4ed936f5c35373282f8a339ac1709"
+auth_token = "0d74058f74ad3b6768493cedb5e9492b$2a2599d5f4003c291e141762d0e43808cfd932f04a8260e94c375d1574599dbf"
