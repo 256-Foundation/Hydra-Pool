@@ -71,3 +71,21 @@ password as you output by hydrapool_cli above.
       password: '<PASSWORD>'
 
 ```
+
+## Build from Source
+
+To build from source, use cargo.
+
+```
+git clone https://github.com/256-foundation/Hydra-Pool/
+cargo build --release
+```
+
+Then run from target directory.
+
+```
+./target/release/hydrapool
+```
+
+
+
