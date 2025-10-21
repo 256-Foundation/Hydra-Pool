@@ -1,47 +1,73 @@
 # Hydrapool
 
-Open Source Bitcoin Mining Pool with support for solo mining and PPLNS accounting.
-
-# Help Us Test
-
-We have built our custom stratum implementation from scratch and we need to test that our implementation supports the various stratum client implementations. For this we need your help.
-
-## How Can You Help?
-
-We are running an test instance of hydrapool using a private signet network. All you need to do is point your miner to our stratum server for two to five minutes and then switch them off.
-
-Stratum server details: `stratum+tcp://test.hydrapool.org:3333`
-
-We will capture the stratum interaction, if it passes we will mark the self identified hardware as passing and we will credit you with helping us test for that hardware.
-
-We publish a list of users who helped us test and which devices they helped test with on https://test.hydrapool.org. 
-
-If the stratum session fails, we will have the interaction available in our logs and we can try and make the changes to our stratum implementation. Once the changes are released we will announce it on the [256 Foundation Telegram group](https://t.me/the256foundation).
-
-## Bitaxe Users
-
-Please upgrade to Bitaxe firmware v2.9.0 or higher. There are issues with older versions that result in disconnections from hydrapool and reconnect.
-
-# Development Status
-
-✅ The solo mining pool is functional.
-
-🔜 PPLNS accounting is coming soon.
-
-⏳ Stats pages are in the development queue.
-
-If you want to help out with any of the development please ping us on the [256 Foundation Telegram group](https://t.me/the256foundation) 💬
+Open Source Bitcoin Mining Pool with support for solo mining and PPLNS
+accounting.
 
 # Running Your Own Hydrapool Instance
 
-Currently we only support manual deployment. We will release rust binary and Linux packages once we are have PPLNS accounting working.
+Binaries are available on the [releases](/releases) page.
 
-1. Make sure you are on Rust MSRV 1.88
-2. Download latest source from https://github.com/256-Foundation/Hydra-Pool/archive/refs/heads/main.zip
-3. Unzip the zip file and run `cargo build --release`
-4. Make sure you have a bitcoind node running for your choice of network.
-5. Edit config.toml file to edit the bitcoindrpc configuration and bitcoin network type.
-5. Run `cargo run --release -- --config=config.toml`
+### Start Hydrapool
 
-We have docker and ansible scripts, which are not being maintained any longer.
+```
+/path/to/hydrapool --config config.toml
+```
 
+### Start Dashboard
+
+Hydrapool ships with a prometheus/grafana dashboard to track the
+hashrate of the pool and individual users and ASICs miners.
+
+The easiest way to run the dashboard is using docker. There is a
+docker compose file for prometheus with configuration provided in the
+.env file.
+
+```
+git clone https://github.com/256-foundation/Hydra-Pool/
+cd Hydra-Pool
+cp .env.example .env   # edit passwords,ports,etc
+docker compose up -d
+```
+
+To provide public facing dashboard, we recommend using nginx/apache as
+a reverse proxy and running the dashboard as a system service.
+
+## Config
+
+Before starting the pool, make sure you edit config.toml to point to
+your bitcoin node.
+
+You will also need to provide a bootstrap address. This address gets
+the payout if in the extremely unlikely case the first few shares find
+a bitcoin block. We build a new template every 10 seconds, so this
+address can get lucky in the first 10 seconds.
+
+We recommend pointing a single machine and warm up the pool for 10
+seconds before pointing more hashrate to the pool.
+
+
+### Securing your Server
+
+At the very least, change the API Server password in your
+config.toml. We provide a command line tool to generate the salt and
+hashed password to use in your config file.
+
+```
+/path/to/hydrapool_cli gen-auth <USERNAME> <PASSWORD>
+```
+
+The above will generate config lines for pasting into your
+config.toml.
+
+Once the password is changed, you need to share that with your
+prometheus setup.
+
+Edit the file prometheus/prometheus.yaml and change the username and
+password as you output by hydrapool_cli above.
+
+```yaml
+    basic_auth:
+      username: '<USERNAME>'
+      password: '<PASSWORD>'
+
+```
