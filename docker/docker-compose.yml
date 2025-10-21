@@ -1,92 +1,42 @@
 services:
-  bitcoind:
-    build:
-      context: .
-      dockerfile: Dockerfile.bitcoind
+  prometheus:
+    image: prom/prometheus:latest
     volumes:
-      - bitcoin_data:/data-${NETWORK:-signet}
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
     ports:
-      - "${BTC_P2P_PORT:-38333}:${BTC_P2P_PORT:-38333}" # P2P port
-      - "${BTC_RPC_PORT:-38332}:${BTC_RPC_PORT:-38332}" # RPC port
-    environment:
-      - NETWORK=${NETWORK:-signet}
-    command: bitcoind -conf=/etc/bitcoin/bitcoin-${NETWORK:-signet}.conf -datadir=/data-${NETWORK:-signet}
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "nc", "-z", "0.0.0.0", "${BTC_P2P_PORT:-38333}" ]
-      interval: 5s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
-    networks:
-      - hydrapool_network
     logging:
       driver: "json-file"
       options:
         max-size: "100m"
         max-file: "3"
 
-  cpuminer:
-    build:
-      context: .
-      dockerfile: Dockerfile.cpuminer
+  grafana:
+    image: grafana/grafana:latest
     depends_on:
-      bitcoind:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - hydrapool_network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-        max-file: "3"
-
-  ckpool:
-    build:
-      context: .
-      dockerfile: Dockerfile.ckpool
-    ports:
-      - "3333:3333"
-      - "8881:8881"
-    depends_on:
-      bitcoind:
-        condition: service_healthy
-    restart: unless-stopped
-    command: /usr/local/bin/ckpool --btcsolo --config=/ckpool-hydra-${NETWORK:-signet}.json --log-shares --loglevel=7
-    healthcheck:
-      test: [ "CMD", "sh", "-c", "ps aux | grep -v grep | grep -q 'ckpool' || exit 1" ]
-      interval: 5s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
-    networks:
-      - hydrapool_network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-        max-file: "3"
-
-  hydrapool:
-    build:
-      context: .
-      dockerfile: Dockerfile.p2pool
-    depends_on:
-      - bitcoind
-      - ckpool
-    environment:
-      - P2POOL_BITCOIN_NETWORK=${NETWORK:-signet}
-      - P2POOL_BITCOIN_URL=bitcoind:${BTC_RPC_PORT:-38332}
-      - P2POOL_STORE_PATH=/data/${NETWORK:-signet}
-      - P2POOL_CKPOOL_HOST=ckpool
-      - RUST_LOG=info
-    command: /usr/local/bin/p2poolv2 --config=/p2pool/config.toml
+      - prometheus
     volumes:
-      - hydrapool_data:/data
+      - grafana_data:/var/lib/grafana
+      - ../prometheus/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./prometheus/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
     restart: unless-stopped
-    networks:
-      - hydrapool_network
     logging:
       driver: "json-file"
       options:
@@ -94,10 +44,5 @@ services:
         max-file: "3"
 
 volumes:
-  bitcoin_data:
-  hydrapool_data:
-
-
-networks:
-  hydrapool_network:
-    driver: bridge
+  prometheus_data:
+  grafana_data:
