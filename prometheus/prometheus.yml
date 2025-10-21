@@ -10,7 +10,7 @@ global:
 # Here it's Prometheus itself.
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
-  - job_name: 'hydrapool'
+  - job_name: 'Hydrapool'
 
     # Override the global default and scrape targets from this job every 5 seconds.
     scrape_interval: 5s
@@ -21,4 +21,4 @@ scrape_configs:
     metrics_path: "/metrics"
     basic_auth:
       username: 'hydrapool'
-      password: 'tDhNs3oWDihEqe3ds5wLiTrXM561LQxaPAPRmgR1tWU'
+      password: 'IzUM19WV71WdkEWEYJ2u0dKIOv5rI-xL0H9GaRULyO8'

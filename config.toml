@@ -52,4 +52,4 @@ port = 46884
 # Optional authentication credentials
 auth_user = "hydrapool"
 # auth_token is of the format salt:password-hmac. Use can hydrapool_cli gen-auth to generate a token.
-auth_token = "ca0bb5121ea503a12cb17691f65aab24$f1dc7db5d59a89599f00f33d1ca54df64943e3619622a958d968ac227b51d9dd"
+auth_token = "781dbcddd95e53aabf940bd2c51f8360$a8f7ddfff9560d506da771096361ba75b9d4ed936f5c35373282f8a339ac1709"
