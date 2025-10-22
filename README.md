@@ -5,7 +5,9 @@ accounting.
 
 # Running Your Own Hydrapool Instance
 
-Binaries are available on the [releases](/releases) page.
+Binaries are available on the
+[releases](https://github.com/256-Foundation/Hydra-Pool/releases)
+page. We provide Linux and MacOS binaries for aarch64 and x86_64.
 
 ### Start Hydrapool
 
