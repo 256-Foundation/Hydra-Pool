@@ -36,8 +36,6 @@ ENV RUST_LOG=info
 
 WORKDIR /hydrapool
 
-# Create a minimal source file for the root package. We need a root package in local dev as we have integration tests there.
-
 # Build hydrapool and hydrapool_cli
 RUN cargo build --release
 

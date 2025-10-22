@@ -1,14 +1,12 @@
+
+NOT RECOMMENDED. THESE ARE STILL A WORK IN PROGRESS.
+
 # Hydra Pool Ansible Deployment
 
-This directory contains Ansible playbooks and templates to deploy the Hydra Pool services on a bare metal Linux server using Docker containers from the GitHub Container Registry (ghcr.io/256-Foundation).
-
-## Services
-
-The deployment includes three core services:
-
-1. **hydrapool-bitcoind** - Bitcoin daemon running on signet or testnet4
-2. **hydrapool-ckpool** - Mining pool software
-3. **hydrapool-p2pool** - P2Pool implementation
+This directory contains Ansible playbooks and templates to deploy the
+Hydra Pool services on a bare metal Linux server using Docker
+containers from the GitHub Container Registry
+(ghcr.io/256-Foundation).
 
 ## Prerequisites
 
@@ -67,51 +65,49 @@ ansible-playbook -i inventory.ini hydrapool.yml -e "network=testnet4" --ask-beco
 
 ## Supported Linux Distributions
 
-The Ansible playbook automatically detects and configures the services for different Linux distributions:
+The Ansible playbook automatically detects and configures the services
+for different Linux distributions:
 
 - **Debian/Ubuntu:** Uses apt package manager
 - **RHEL/CentOS/Fedora:** Uses dnf package manager
 - **Arch Linux:** Uses pacman package manager
 - **SUSE/openSUSE:** Uses zypper package manager
 
-When you run the ansible playbook, each Docker will be installed through its native package manager and repositories.
+When you run the ansible playbook, each Docker will be installed
+through its native package manager and repositories.
 
 ## Service Management
 
-The deployment creates systemd services that will automatically start on boot and restart if they crash.
+The deployment creates systemd services that will automatically start
+on boot and restart if they crash.
 
-To check their status, ssh into your server and use the following systemd commands to check status.
+To check their status, ssh into your server and use the following
+systemd commands to check status.
 
 ```bash
 # Check status of services
-sudo systemctl status hydrapool-bitcoind
-sudo systemctl status hydrapool-ckpool
-sudo systemctl status hydrapool-p2pool
+sudo systemctl status hydrapool
 
 # Restart services
-sudo systemctl restart hydrapool-bitcoind
-sudo systemctl restart hydrapool-ckpool
-sudo systemctl restart hydrapool-p2pool
+sudo systemctl restart hydrapool
 ```
 
 ## Data Directories
 
 On your server the following directories will have the logs for the various services.
 
-- Bitcoin data: `/var/lib/hydrapool/bitcoin-<network>/`
-- P2Pool data: `/var/lib/hydrapool/hydrapool/`
+- Hydrapool data: `/var/lib/hydrapool/hydrapool/`
 - Logs: `/var/log/hydrapool/`
 
 ## Ports
 
 We use the following ports on the server.
 
-- Bitcoin P2P: 38333 (signet) or 48333 (testnet4)
-- Bitcoin RPC: 38332 (signet) or 48332 (testnet4)
-- CKPool mining: 3333
-- CKPool API: 8881
+- Bitcoin P2P: 38333 (signet) / 48333 (testnet4) / 8333 (mainnet)
+- Bitcoin RPC: 38332 (signet) / 48332 (testnet4) / 8332 (mainnet)
 
 ## Security Considerations
 
 - The current configuration opens RPC access to all IPs (0.0.0.0/0)
-- For production use, restrict RPC access in the bitcoin configuration templates. See templates/bitcoin.*.conf.j2.
+- For production use, restrict RPC access in the bitcoin configuration
+  templates. See templates/bitcoin.*.conf.j2.

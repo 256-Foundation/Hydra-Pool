@@ -4,8 +4,10 @@
   become: true
   vars:
     network: "{{ hostvars['localhost']['network'] | default('signet') }}"
-    btc_p2p_port: "{{ '38333' if network == 'signet' else '48333' }}"
-    btc_rpc_port: "{{ '38332' if network == 'signet' else '48332' }}"
+    btc_p2p_port: "{{ '38333' if network == 'signet' else '48333' if network == 'testnet' else '8333' }}"
+    btc_rpc_port: "{{ '38332' if network == 'signet' else '48332' if network == 'testnet' else '8332' }}"
+    btc_zmq_port: "{{ '38334' if network == 'signet' else '28334' if network == 'testnet' else '8334' }}"
+    pool_api_port: "{{ '36884' if network == 'signet' else '26884' if network == 'testnet' else '6884' }}"
     data_dir: "/var/lib/hydrapool"
     log_dir: "/var/log/hydrapool"
 
@@ -137,75 +139,23 @@
         dest: "{{ data_dir }}/bitcoin-{{ network }}/bitcoin-{{ network }}.conf"
         mode: '0644'
 
-    # Copy CKPool configuration
-    - name: Copy CKPool configuration file template
+    # Copy Hydrapool configuration
+    - name: Copy Hydrapool configuration file template
       template:
-        src: ckpool-hydra-{{ network }}.json.j2
-        dest: "{{ data_dir }}/ckpool-hydra-{{ network }}.json"
+        src: hydrapool-config.toml.j2
+        dest: "{{ data_dir }}/hydrapool-config.toml"
         mode: '0644'
 
-    # Copy P2Pool configuration
-    - name: Copy P2Pool configuration file template
+    - name: Create hydrapool service file
       template:
-        src: p2pool-config.toml.j2
-        dest: "{{ data_dir }}/p2pool-config.toml"
-        mode: '0644'
-
-    # Create systemd service files
-    - name: Create bitcoind service file
-      template:
-        src: bitcoind.service.j2
-        dest: /etc/systemd/system/hydrapool-bitcoind.service
-        mode: '0644'
-      notify: Reload systemd
-
-    - name: Create ckpool service file
-      template:
-        src: ckpool.service.j2
-        dest: /etc/systemd/system/hydrapool-ckpool.service
-        mode: '0644'
-      notify: Reload systemd
-
-    - name: Create p2pool service file
-      template:
-        src: p2pool.service.j2
+        src: hydrapool.service.j2
         dest: /etc/systemd/system/hydrapool-p2pool.service
         mode: '0644'
       notify: Reload systemd
 
-    # Start and enable services
-    - name: Enable and start bitcoind service
+    - name: Enable and start hydrapool service
       systemd:
-        name: hydrapool-bitcoind
-        enabled: yes
-        state: started
-        daemon_reload: yes
-
-    - name: Wait for bitcoind to be ready
-      wait_for:
-        host: localhost
-        port: "{{ btc_p2p_port }}"
-        state: started
-        timeout: 300
-
-    - name: Enable and start ckpool service
-      systemd:
-        name: hydrapool-ckpool
-        enabled: yes
-        state: started
-        daemon_reload: yes
-
-    - name: Wait for ckpool to be ready
-      shell: "nc -z localhost 8881"
-      register: ckpool_check
-      until: ckpool_check.rc == 0
-      retries: 10
-      delay: 5
-      changed_when: false
-
-    - name: Enable and start p2pool service
-      systemd:
-        name: hydrapool-p2pool
+        name: hydrapool
         enabled: yes
         state: started
         daemon_reload: yes

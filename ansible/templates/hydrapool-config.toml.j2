@@ -1,3 +1,5 @@
+# Hydrapool configuration for {{ network }} network
+
 [store]
 path = "./store.db"
 background_task_frequency_hours = 24
@@ -9,16 +11,16 @@ port = 3333
 start_difficulty = 1
 minimum_difficulty = 1
 # The bitcoin address to use for first jobs when there are no shares
-bootstrap_address = "<your bootstrap address here>"
+bootstrap_address = "{{bootstrap_address}}"
 # Any donation amount for developers to be sent to donation address. Default no donation.
-# donation_address = "<your donation address here>"
+donation_address = "{{donation_address}}"
 # In basis points, 1% = 100 basis points. Default 0
-# donation = 50
+donation = {{donation_amount}}
 # Any fee amount for node/hydrapool provider to be sent to fee address. Default no fee.
-# fee_address = "<your fee address here>"
+fee_address = "{{fee_address}}"
 # In basis points, 1% = 100 basis points. Default 0
-# fee = 200
-zmqpubhashblock = "tcp://127.0.0.1:28334"
+fee = {{fee_amount}}
+zmqpubhashblock = "tcp://127.0.0.1:{{btc_zmq_port}}"
 # The network can be "main", "testnet4" or "signet"
 network = "signet"
 version_mask = "1fffe000"
@@ -31,9 +33,9 @@ pubkey = "020202020202020202020202020202020202020202020202020202020202020202"
 
 [bitcoinrpc]
 # RPC credentials are loaded from env vars
-url = "http://127.0.0.1:38332"
-username = "p2pool"
-password = "p2pool"
+url = "http://127.0.0.1:{{btc_rpc_port}}"
+username = "{{btc_rpc_username}}"
+password = "{{btc_rpc_password}}"
 
 [logging]
 # Specify a file path for the log file, if no log file is specified, console logging will be used
@@ -48,7 +50,7 @@ path = "tests.main"
 
 [api]
 hostname = "0.0.0.0"
-port = 46884
+port = {{pool_api_port}}
 # Optional authentication credentials
 auth_user = "hydrapool"
 # auth_token is of the format salt:password-hmac. Use can hydrapool_cli gen-auth to generate a token.
