@@ -38,13 +38,10 @@ password = "p2pool"
 [logging]
 # Specify a file path for the log file, if no log file is specified, console logging will be used
 # file = "./logs/p2pool.log"
-level = "debug"
-# Pool, user and worker stats are dumped for consumption by stats tools
+# Set a log level. The supported levels are debug, info, warn and error.
+level = "info"
+# Pool, user and worker stats are backed up for aggregates across pool restarts in this directory.
 stats_dir = "./logs/stats"
-
-[[tests]]
-name = "integration"
-path = "tests.main"
 
 [api]
 hostname = "0.0.0.0"

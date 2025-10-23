@@ -32,6 +32,14 @@ limit on the size of the coinbase.
 curl --proto '=https' --tlsv1.2 -LsSf https://github.com/256-Foundation/Hydra-Pool/releases/latest/download/hydrapool-installer.sh | sh
 ```
 
+The above will install two binaries in your path:
+
+1. `hydrapool` - the binary to start the pool.
+2. `hydrapool_cli` - a utility to query the state of the pool, generate authentication tokens etc.
+
+Both binaries come with the `--help` option that document the other
+options and commands they support.
+
 Binaries are available on the
 [releases](https://github.com/256-Foundation/Hydra-Pool/releases)
 page. We provide Linux, Windows and MacOS binaries. Go to releases
@@ -42,7 +50,7 @@ page to access an older release.
 Download the config file from
 [config.toml](https://github.com/256-Foundation/Hydra-Pool/blob/main/config.toml)
 and edit it for your addresses, donation and fee amounts as well as
-your bitcoin RPC ports and credentials. Als consider securing your
+your bitcoin RPC ports and credentials. Also consider securing your
 server with new API Server credentials. See [Securing Your
 Server](#secure).
 
@@ -69,6 +77,31 @@ git clone https://github.com/256-foundation/Hydra-Pool/
 cd Hydra-Pool
 docker compose up -d
 ```
+
+The above will make a grafana dashboard available on
+`localhost:3000`. You need to click on `dashboards` menu on the
+left. There are two dashboards provided out of the box. `Pool` and
+`Users and Hashrate`.
+
+#### Pool Dashboard
+
+The `Pool` dashboard shows the hashrate of the pool, the shares per
+second, max difficulty reached by any of the workers. It also charts
+the total number of users and workers in the pool over time.
+
+#### Users and Hashrate Dashboard
+
+This dashboard shows the stats for a selected user. For privacy, the
+user needs to enter their bitcoin address used in their ASIC
+configuration. There is a text input box at the top of the dashboard
+where this btc address has to be entered.
+
+Once the user has provided their btc address, they will be shown the
+total hashrate of the all their workers as well as individual hashrate
+for all their workers. They can also filter their workers by selecting
+specific workers from the workers drop down on the top.
+
+### Public Dashboard
 
 To provide public facing dashboard, we recommend using nginx/apache as
 a reverse proxy and running the dashboard as a system service.
@@ -97,7 +130,7 @@ config.toml. We provide a command line tool to generate the salt and
 hashed password to use in your config file.
 
 ```
-/path/to/hydrapool_cli gen-auth <USERNAME> <PASSWORD>
+hydrapool_cli gen-auth <USERNAME> <PASSWORD>
 ```
 
 The above will generate config lines for pasting into your
