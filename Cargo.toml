@@ -1,6 +1,6 @@
 [package]
 name = "hydrapool"
-version = "1.1.4"
+version = "1.1.5"
 edition = "2024"
 rust-version = "1.88.0"
 authors = ["Kulpreet Singh<kp@opdup.com>"]
@@ -12,6 +12,7 @@ repository = "https://github.com/256-Foundation/Hydra-Pool/"
 keywords = ["bitcoin", "mining", "pool", "p2p"]
 categories = ["cryptography::cryptocurrencies"]
 exclude=["tests"]
+default-run = "hydrapool"
 
 [profile.release]
 codegen-units = 1
@@ -30,10 +31,10 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 bitcoin = { version = "0.32.5", features = ["serde", "rand"] }
 tokio = { version = "1.0", features = ["full"] }
-p2poolv2_lib = { git = "https://github.com/p2poolv2/p2poolv2", package = "p2poolv2_lib", tag = "hydrapool.v0.3.1" }
-p2poolv2_cli = { git = "https://github.com/p2poolv2/p2poolv2", package = "p2poolv2_cli", tag = "hydrapool.v0.3.1" }
-p2poolv2_api = { git = "https://github.com/p2poolv2/p2poolv2", package = "p2poolv2_api", tag = "hydrapool.v0.3.1" }
-bitcoindrpc = { git = "https://github.com/p2poolv2/p2poolv2", package = "bitcoindrpc", tag = "hydrapool.v0.3.1" }
+p2poolv2_lib = { git = "https://github.com/p2poolv2/p2poolv2", package = "p2poolv2_lib", tag = "hydrapool.v0.3.2" }
+p2poolv2_cli = { git = "https://github.com/p2poolv2/p2poolv2", package = "p2poolv2_cli", tag = "hydrapool.v0.3.2" }
+p2poolv2_api = { git = "https://github.com/p2poolv2/p2poolv2", package = "p2poolv2_api", tag = "hydrapool.v0.3.2" }
+bitcoindrpc = { git = "https://github.com/p2poolv2/p2poolv2", package = "bitcoindrpc", tag = "hydrapool.v0.3.2" }
 
 [[bin]]
 name = "hydrapool"
