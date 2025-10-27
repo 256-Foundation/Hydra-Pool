@@ -3,6 +3,12 @@
 [Hydrapool](https://hydrapool.org) is an open Source Bitcoin Mining
 Pool with support for solo mining and PPLNS accounting.
 
+We have an instance mining on mainnet at
+[test.hydrapool.org](https://test.hydrapool.org). But we hope you'll
+run a pool for yourself. See below on [how to run your own instance](#run). We
+only accomodate up to 20 users atm for coinbase and block weight
+reasons, workers are limited by your hardware.
+
 ## Features
 
 1. Run a private solo pool or a private PPLNS pool for your community
@@ -24,6 +30,7 @@ Currently we limit 20 users, but this limit will be removed in the
 future. This limit is in place to allow all older hardware that has a
 limit on the size of the coinbase.
 
+<a id="run"></a>
 # Running Your Own Hydrapool Instance
 
 ## Install Hydrapool
