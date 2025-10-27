@@ -321,7 +321,7 @@
         {
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count((sum by (workername) (rate(worker_shares_valid_total[5m])) > 0))",
+          "expr": "count((sum by (btcaddress, workername) (rate(worker_shares_valid_total[5m])) > 0))",
           "instant": false,
           "legendFormat": "Workers",
           "range": true,
@@ -644,5 +644,5 @@
   "timezone": "browser",
   "title": "Pool",
   "uid": "ad4559x",
-  "version": 1
+  "version": 3
 }
