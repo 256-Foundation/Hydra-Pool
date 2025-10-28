@@ -1,0 +1,113 @@
+name: Build Debian Package
+
+on:
+  push:
+    branches:
+      - main
+      - debian-package
+    tags:
+      - '**[0-9]+.[0-9]+.[0-9]+*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-debian:
+    name: Build Debian Package
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            clang \
+            pkg-config \
+            libzmq3-dev \
+            libzstd-dev \
+            libsnappy-dev \
+            libbz2-dev \
+            liblz4-dev \
+            zlib1g-dev \
+            libssl-dev \
+            dpkg-dev \
+            librocksdb-dev
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.88.0
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install cargo-deb
+        run: |
+          if ! command -v cargo-deb &> /dev/null; then
+            cargo install cargo-deb
+          fi
+
+      - name: Build release binaries
+        env:
+          ROCKSDB_LIB_DIR: /usr/lib
+        run: cargo build --release
+
+      - name: Build Debian package
+        run: cargo deb
+
+      - name: Get package version
+        id: version
+        run: |
+          VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "deb_file=hydrapool_${VERSION}_amd64.deb" >> $GITHUB_OUTPUT
+
+      - name: List generated files
+        run: |
+          ls -lh target/debian/
+
+      - name: Upload Debian package as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debian-package
+          path: target/debian/*.deb
+          if-no-files-found: error
+
+      - name: Attach to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          echo "Attaching Debian package to release: $TAG_NAME"
+
+          # Wait for release to be created (by release.yml workflow)
+          for i in {1..30}; do
+            if gh release view "$TAG_NAME" &>/dev/null; then
+              echo "Release found, uploading package..."
+              gh release upload "$TAG_NAME" target/debian/*.deb --clobber
+              echo "Debian package uploaded successfully!"
+              exit 0
+            fi
+            echo "Waiting for release to be created (attempt $i/30)..."
+            sleep 10
+          done
+
+          echo "Warning: Release not found after 5 minutes. Creating release..."
+          gh release create "$TAG_NAME" target/debian/*.deb --title "Release $TAG_NAME" --generate-notes
