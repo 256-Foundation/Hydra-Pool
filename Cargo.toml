@@ -45,3 +45,26 @@ bench = false
 name = "hydrapool_cli"
 test = false
 bench = false
+
+[package.metadata.deb]
+maintainer = "Kulpreet Singh <kp@opdup.com>"
+copyright = "2024, Kulpreet Singh <kp@opdup.com>"
+license-file = ["LICENSE", "4"]
+extended-description = """\
+Hydrapool is an open source Bitcoin mining pool with support for solo mining \
+and PPLNS (Pay Per Last N Shares) accounting. Features include:\n\
+  - Run a private solo pool or PPLNS pool\n\
+  - Payouts made directly from coinbase (no custody)\n\
+  - API for downloading and validating share accounting\n\
+  - Compatible with any bitcoin RPC node"""
+depends = "$auto, systemd"
+section = "net"
+priority = "optional"
+assets = [
+    ["target/release/hydrapool", "usr/bin/", "755"],
+    ["target/release/hydrapool_cli", "usr/bin/", "755"],
+    ["config.toml", "etc/hydrapool/config.toml", "644"],
+]
+conf-files = ["/etc/hydrapool/config.toml"]
+maintainer-scripts = "packages/debian/"
+systemd-units = { enable = false }

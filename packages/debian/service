@@ -1,0 +1,25 @@
+[Unit]
+Description=Hydrapool Bitcoin Mining Pool
+After=network.target
+
+[Service]
+Type=simple
+User=hydrapool
+Group=hydrapool
+WorkingDirectory=/var/lib/hydrapool
+ExecStart=/usr/bin/hydrapool --config /etc/hydrapool/config.toml
+Restart=always
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hydrapool
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/hydrapool /var/log/hydrapool
+
+[Install]
+WantedBy=multi-user.target

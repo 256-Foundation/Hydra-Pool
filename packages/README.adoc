@@ -1,0 +1,18 @@
+= Packaging for Hydrapool
+
+== Supported packages:
+
+. Debian
+
+= Debian Build Locally Using Docker
+
+== Build docker image
+
+This image runs cargo build --release so that later we use the image
+only to build the package.
+
+`docker build -f packages/Dockerfile.debian -t debian-build-hydrapool-package .`
+
+== Build package
+
+`docker run --volume ./:/hydrapool/target debian-build-hydrapool-package`

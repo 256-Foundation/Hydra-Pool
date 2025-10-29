@@ -1,0 +1,80 @@
+name: Build Debian Package
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+  push:
+    branches:
+      - debian-package
+
+jobs:
+  build-debian:
+    name: Build Debian Package
+    runs-on: ubuntu-22.04
+    # Only run if Release succeeded (when triggered by workflow_run) or on manual triggers
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            dpkg-dev
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.88.0
+
+      - name: Install cargo-deb
+        run: |
+          if ! command -v cargo-deb &> /dev/null; then
+            cargo install cargo-deb
+          fi
+
+      - name: Build release binaries
+        run: cargo build --release
+
+      - name: Build Debian package
+        run: cargo deb
+
+      - name: Get package version
+        id: version
+        run: |
+          VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "deb_file=hydrapool_${VERSION}_amd64.deb" >> $GITHUB_OUTPUT
+
+      - name: List generated files
+        run: |
+          ls -lh target/debian/
+
+      - name: Upload Debian package as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debian-package
+          path: target/debian/*.deb
+          if-no-files-found: error
+
+      - name: Attach to GitHub Release
+        if: github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the tag from the workflow run that triggered this
+          TAG_NAME=$(git describe --tags --exact-match ${{ github.event.workflow_run.head_sha }} 2>/dev/null || echo "")
+
+          if [ -z "$TAG_NAME" ]; then
+            echo "No tag found for this release, skipping upload"
+            exit 0
+          fi
+
+          echo "Attaching Debian package to release: $TAG_NAME"
+          gh release upload "$TAG_NAME" target/debian/*.deb --clobber
+          echo "Debian package uploaded successfully to release $TAG_NAME"
