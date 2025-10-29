@@ -36,8 +36,7 @@ jobs:
             liblz4-dev \
             zlib1g-dev \
             libssl-dev \
-            dpkg-dev \
-            librocksdb-dev
+            dpkg-dev
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -64,8 +63,6 @@ jobs:
           fi
 
       - name: Build release binaries
-        env:
-          ROCKSDB_LIB_DIR: /usr/lib
         run: cargo build --release
 
       - name: Build Debian package
