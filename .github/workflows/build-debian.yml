@@ -1,4 +1,6 @@
 name: Build Debian Package
+permissions:
+  "contents": "write"
 
 on:
   workflow_run:
