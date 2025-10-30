@@ -11,20 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add docker files for hydrapool, grafana and prometheus
 - Add a docker compose file for easy use for end users
-- 
-
-### Changed
-
-- Use frontmatter title & description in each language version template
-- Replace broken OpenGraph image with an appropriately-sized Keep a Changelog 
-  image that will render properly (although in English for all languages)
-- Fix OpenGraph title & description for all languages so the title and 
-description when links are shared are language-appropriate
-
-### Removed
-
-- Trademark sign previously shown after the project description in version 
-0.3.0
+- Add docker build work flow to build docker images on github actions
 
 ## [1.1.12] - 2025-10-29
 
