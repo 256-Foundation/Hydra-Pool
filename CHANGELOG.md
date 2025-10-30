@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.13] - 2025-10-30
+
 ### Added
 
 - Add docker files for hydrapool, grafana and prometheus
-- Add a docker compose file for easy use for end users
+- Add a docker compose file for ease of use for end users
 - Add docker build work flow to build docker images on github actions
 
 ## [1.1.12] - 2025-10-29
@@ -37,7 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add debian package workflow using cargo-deb
 
-[unreleased]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.12...HEAD
+[unreleased]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.13...HEAD
+[1.1.12]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.12...v1.1.13
 [1.1.12]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.11...v1.1.12
 [1.1.11]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.10...v1.1.11
 [1.1.10]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.9...v1.1.10
