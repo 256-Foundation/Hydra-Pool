@@ -82,6 +82,7 @@ docker compose file for prometheus.
 ```
 git clone https://github.com/256-foundation/Hydra-Pool/
 cd Hydra-Pool
+cd docker
 docker compose up -d
 ```
 
