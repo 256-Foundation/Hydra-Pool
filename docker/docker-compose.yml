@@ -1,21 +1,27 @@
 services:
   hydrapool:
-    profiles: [hydrapool]
     build:
       context: ..
       dockerfile: docker/Dockerfile.hydrapool
     environment:
-      - HYDRAPOOL_BITCOIN_NETWORK=${NETWORK:-signet}
-      - HYDRAPOOL_BITCOIN_URL=bitcoind:${BTC_RPC_PORT:-38332}
-      - HYDRAPOOL_STORE_PATH=/data/${NETWORK:-signet}
       - RUST_LOG=info
-    command: /hydrapool/target/release/hydrapool --config=/hydrapool/config.toml
+    # Config is mounted from local file - edit docker/config.toml to customize
     volumes:
-      - hydrapool_data:/data
+      - ./config.toml:/etc/hydrapool/config.toml:ro
+      - hydrapool_data:/var/lib/hydrapool
+      - hydrapool_logs:/var/log/hydrapool
     restart: unless-stopped
     ports:
-      - "3333:3333"
-      - "46884:46884" # API server port
+      - "3333:3333"      # Stratum mining port
+      - "46884:46884"    # API server port
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "--user", "hydrapool:hydrapool", "http://localhost:46884/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - hydrapool_network
     logging:
@@ -23,9 +29,24 @@ services:
       options:
         max-size: "100m"
         max-file: "3"
-        
+
+  hydrapool-cli:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.hydrapool
+    profiles: [cli]  # Prevents auto-start with docker compose up
+    entrypoint: ["/usr/local/bin/hydrapool_cli", "--config", "/etc/hydrapool/config.toml"]
+    volumes:
+      - ./config.toml:/etc/hydrapool/config.toml:ro
+      - hydrapool_data:/var/lib/hydrapool
+    networks:
+      - hydrapool_network
+
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.6.0
+    depends_on:
+      hydrapool:
+        condition: service_healthy
     volumes:
       - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -38,6 +59,12 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -46,9 +73,10 @@ services:
         max-file: "3"
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.2.0
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_healthy
     volumes:
       - grafana_data:/var/lib/grafana
       - ../prometheus/grafana/provisioning:/etc/grafana/provisioning:ro
@@ -73,6 +101,7 @@ volumes:
   prometheus_data:
   grafana_data:
   hydrapool_data:
+  hydrapool_logs:
 
 networks:
   hydrapool_network:

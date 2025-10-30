@@ -1,0 +1,76 @@
+# Hydrapool Docker Configuration Example
+# Copy this file to config.toml and edit for your setup:
+#   cp config-example.toml config.toml
+
+[store]
+# Database path - leave as-is for Docker
+path = "/var/lib/hydrapool/store.db"
+background_task_frequency_hours = 24
+pplns_ttl_days = 7
+
+[stratum]
+hostname = "0.0.0.0"
+port = 3333
+start_difficulty = 1
+minimum_difficulty = 1
+
+# REQUIRED: Change this to YOUR Bitcoin address. Default is 256
+# Foundation donation address.
+#
+# This address receives payouts if a block is found in the first 10
+# seconds
+bootstrap_address = "bc1qypskemx80lznv4tjpnmpw9c5pgpy32fpkk3sw2"
+
+# Optional: Donation to developers (in basis points, 100 = 1%)
+# donation_address = "<your donation address here>"
+# donation = 50
+
+# Optional: Pool operator fee (in basis points, 100 = 1%)
+# fee_address = "<your fee address here>"
+# fee = 200
+
+# REQUIRED: Change to match your Bitcoin node's ZMQ endpoint
+# For Docker: use "tcp://host.docker.internal:28334" to connect to host
+# For local Bitcoin node running on host machine
+zmqpubhashblock = "tcp://host.docker.internal:28334"
+
+# REQUIRED: Set your network ("main", "testnet4", or "signet")
+network = "signet"
+
+version_mask = "1fffe000"
+
+# Difficulty multiplier for PPLNS window calculation
+# See: https://github.com/p2poolv2/p2poolv2/wiki/Difficult-Multiplier
+difficulty_multiplier = 1.0
+
+# Optional: Pool signature (max 16 bytes)
+# Comment out for anonymous mining or replace/append your identifier.
+pool_signature = "hydrapool"
+
+[bitcoinrpc]
+# REQUIRED: Bitcoin RPC connection
+# For Docker: use "http://host.docker.internal:38332" to connect to host
+url = "http://host.docker.internal:38332"
+username = "hydrapool"
+password = "hydrapool"
+
+[logging]
+# Log file path - leave as-is for Docker
+# file = "/var/log/hydrapool/hydrapool.log"
+level = "info"
+# Stats backup directory - leave as-is for Docker
+stats_dir = "/var/lib/hydrapool/stats"
+
+[api]
+hostname = "0.0.0.0"
+port = 46884
+
+# API authentication - CHANGE THIS!
+# Generate new credentials with: hydrapool_cli gen-auth <username> <password>
+# With docker - `cd docker; ./cli.sh gen-auth <username> <password>`
+# When you change this change the following:
+# 1. docker-compose.yml to update the username/password for hydrapool healthcheck
+# 2. prometheus.yml to update auth
+auth_user = "hydrapool"
+auth_token = "28a556ceb0b24c9b664d1e35a81239ed$5c9fb3271b22be05eb87272ce11c3cad55242d045eb379873ce0dc821586204a"
+

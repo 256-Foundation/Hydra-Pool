@@ -1,5 +1,5 @@
-# Build stage
-FROM rust:1.88-slim-bullseye
+# Stage 1: Builder
+FROM rust:1.88-slim-bullseye AS builder
 
 # Install required build dependencies
 RUN apt-get update && apt-get install -y \
@@ -17,30 +17,63 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Build and install RocksDB
-RUN git clone --depth 1 --branch v7.10.2 https://github.com/facebook/rocksdb.git && \
-    cd rocksdb && \
-    PORTABLE=1 make -j$(nproc) shared_lib && \
-    cp librocksdb.so* /usr/lib/ && \
-    cp -r include/rocksdb /usr/include/ && \
-    cd .. && \
-    rm -rf rocksdb
-
 # Create and set working directory
-RUN mkdir -p /hydrapool
-COPY src/ /hydrapool/src
-COPY Cargo.lock /hydrapool/Cargo.lock
-COPY Cargo.toml /hydrapool/Cargo.toml
-
-ENV RUST_LOG=info
-
 WORKDIR /hydrapool
 
-# Build hydrapool and hydrapool_cli
+# Copy source files
+COPY src/ ./src/
+COPY Cargo.lock Cargo.toml ./
+
+# Build hydrapool and hydrapool_cli in release mode
 RUN cargo build --release
 
-# Copy config after building - for quick config changes
-COPY config.toml /hydrapool/config.toml
+# Stage 2: Runtime
+FROM debian:bullseye-slim
 
-ENTRYPOINT [ ]
-CMD [] 
+# Install only runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libzmq5 \
+    libssl1.1 \
+    libzstd1 \
+    libsnappy1v5 \
+    libbz2-1.0 \
+    liblz4-1 \
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create hydrapool user and group
+RUN groupadd --system hydrapool && \
+    useradd --system --gid hydrapool --home-dir /var/lib/hydrapool \
+    --no-create-home --shell /usr/sbin/nologin hydrapool
+
+# Create necessary directories
+RUN mkdir -p /var/lib/hydrapool /var/log/hydrapool /etc/hydrapool && \
+    chown -R hydrapool:hydrapool /var/lib/hydrapool /var/log/hydrapool
+
+# Copy binaries from builder stage
+COPY --from=builder /hydrapool/target/release/hydrapool /usr/local/bin/
+COPY --from=builder /hydrapool/target/release/hydrapool_cli /usr/local/bin/
+
+# Copy default config
+COPY config.toml /etc/hydrapool/config.toml
+
+# Set permissions
+RUN chmod +x /usr/local/bin/hydrapool /usr/local/bin/hydrapool_cli && \
+    chown hydrapool:hydrapool /etc/hydrapool/config.toml
+
+# Switch to non-root user
+USER hydrapool
+
+# Set working directory
+WORKDIR /var/lib/hydrapool
+
+# Expose API port (adjust based on your config)
+EXPOSE 46884
+
+# Set environment
+ENV RUST_LOG=info
+
+# Run hydrapool
+ENTRYPOINT ["/usr/local/bin/hydrapool"]
+CMD ["--config", "/etc/hydrapool/config.toml"]
