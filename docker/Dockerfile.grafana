@@ -1,0 +1,11 @@
+FROM grafana/grafana:12.2.0
+
+# Copy provisioning configurations
+COPY ./prometheus/grafana/provisioning/datasources/prometheus.yml /etc/grafana/provisioning/datasources/prometheus.yml
+COPY ./prometheus/grafana/provisioning/dashboards/dashboards.yml /etc/grafana/provisioning/dashboards/dashboards.yml
+
+# Copy dashboard JSON files
+COPY ./prometheus/grafana/dashboards/ /etc/grafana/dashboards/
+
+
+# The base image already sets the correct user, entrypoint and command

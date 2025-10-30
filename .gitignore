@@ -2,4 +2,5 @@
 store*.db
 p2pool.log
 .env
+docker/.env
 logs/*

@@ -39,7 +39,7 @@ RUN apt-get update && apt-get install -y \
     libbz2-1.0 \
     liblz4-1 \
     ca-certificates \
-    curl \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Create hydrapool user and group
