@@ -1,10 +1,13 @@
 name: Build and Push Docker Images
+permissions:
+  "contents": "write"
 
 on:
-  pull_request:
+  release:
+    types: [published]
   push:
-    tags:
-      - '**[0-9]+.[0-9]+.[0-9]+*'
+    branches:
+      - docker-one-click
 
 env:
   REGISTRY: ghcr.io
@@ -25,16 +28,22 @@ jobs:
           - component: hydrapool
             dockerfile: docker/Dockerfile.hydrapool
             context: docker/
+            image_name: hydrapool
           - component: grafana
             dockerfile: docker/Dockerfile.grafana
             context: docker/
+            image_name: hydrapool-grafana
           - component: prometheus
             dockerfile: docker/Dockerfile.prometheus
             context: docker/
+            image_name: hydrapool-prometheus
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+          fetch-depth: 0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -51,7 +60,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/hydrapool-${{ matrix.component }}
+          images: ${{ env.REGISTRY }}/${{ env.ORGANIZATION }}/${{ matrix.image_name }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
