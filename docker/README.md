@@ -18,21 +18,12 @@ Edit `config.toml` and configure:
 - **`bitcoinrpc.username`** and **`bitcoinrpc.password`** - Your Bitcoin RPC credentials
 - **`network`** - Set to `main`, `testnet4`, or `signet`
 
-### 2. (Optional) Customize Grafana credentials
+### 2. Grafana credentials
 
-By default, Grafana uses `admin/admin` for username and password. To change:
+By default, Grafana uses `admin/admin` for username and password.
 
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and set your desired credentials:
-```bash
-GRAFANA_ADMIN_USER=yourusername
-GRAFANA_ADMIN_PASSWORD=yourpassword
-```
-
-**Note:** The `.env` file is git-ignored to prevent accidentally committing credentials.
+You can and should login and change this password before exposing your
+grafana instance to the public.
 
 ### 3. Start Hydrapool
 
