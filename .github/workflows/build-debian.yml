@@ -6,9 +6,6 @@ on:
   workflow_run:
     workflows: ["Release"]
     types: [completed]
-  push:
-    branches:
-      - debian-package
 
 jobs:
   build-debian:
