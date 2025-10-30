@@ -17,7 +17,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD", "curl", "-f", "--user", "hydrapool:hydrapool", "http://localhost:46884/health"]
+      test: ["CMD", "wget", "--spider", "-q", "--http-user=hydrapool", "--http-password=hydrapool", "--auth-no-challenge", "http://localhost:46884/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -43,12 +43,13 @@ services:
       - hydrapool_network
 
   prometheus:
-    image: prom/prometheus:v3.6.0
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.prometheus
     depends_on:
       hydrapool:
         condition: service_healthy
     volumes:
-      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     ports:
       - "9090:9090"
@@ -60,7 +61,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -73,23 +74,23 @@ services:
         max-file: "3"
 
   grafana:
-    image: grafana/grafana:12.2.0
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.grafana
     depends_on:
       prometheus:
         condition: service_healthy
     volumes:
       - grafana_data:/var/lib/grafana
-      - ../prometheus/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ../prometheus/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
-      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/pool.json
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/dashboards/pool.json
     restart: unless-stopped
     logging:
       driver: "json-file"
