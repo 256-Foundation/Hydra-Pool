@@ -27,15 +27,15 @@ jobs:
         include:
           - component: hydrapool
             dockerfile: docker/Dockerfile.hydrapool
-            context: docker/
+            context: .
             image_name: hydrapool
           - component: grafana
             dockerfile: docker/Dockerfile.grafana
-            context: docker/
+            context: .
             image_name: hydrapool-grafana
           - component: prometheus
             dockerfile: docker/Dockerfile.prometheus
-            context: docker/
+            context: .
             image_name: hydrapool-prometheus
 
     steps:
