@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cosign docker images
 - Add docker compose and config example to release
 - Add docker compose instruction as primary way to run pool
+- Support custom prometheus authentication
 
 ### Deprecated
 

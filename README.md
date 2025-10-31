@@ -128,14 +128,26 @@ Once the password is changed, you need to share that with your
 prometheus setup. The same credentials will also be used to access the
 API Server.
 
-Edit the file prometheus/prometheus.yaml and change the username and
-password as you output by hydrapool_cli above.
+To update prometheus with your new credentials:
 
+1. Copy the prometheus configuration template:
+```bash
+cp prometheus/prometheus.yml docker/prometheus.yml
+```
+
+2. Edit `docker/prometheus.yml` and change the username and password to match what was output by hydrapool_cli above:
 ```yaml
     basic_auth:
       username: '<USERNAME>'
       password: '<PASSWORD>'
 ```
+
+3. Restart the prometheus service:
+```bash
+docker compose restart prometheus
+```
+
+Note: By default, prometheus uses the built-in configuration with credentials `hydrapool/hydrapool`. Creating a custom `docker/prometheus.yml` file overrides this default configuration.
 
 <a id="api"></a>
 ## API Server
