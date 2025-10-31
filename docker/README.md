@@ -59,6 +59,17 @@ After editing `config.toml`, restart Hydrapool:
 docker compose restart hydrapool
 ```
 
+## Updating to Latest Release
+
+To update to the latest released version:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+This pulls the latest images from GitHub Container Registry and restarts services with the new versions.
+
 ## Stopping Hydrapool
 
 ```bash
@@ -99,12 +110,20 @@ docker run --rm -v hydrapool_data:/data -v $(pwd):/backup alpine tar czf /backup
 
 ## Building from Source
 
-To rebuild the Docker image after code changes:
+By default, `docker-compose.yml` uses pre-built images from GitHub Container Registry.
+
+For local development and testing changes:
 
 ```bash
-docker compose build hydrapool
-docker compose up -d hydrapool
+# Build and run with local changes
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+# Or rebuild specific service
+docker compose -f docker-compose.yml -f docker-compose.dev.yml build hydrapool
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d hydrapool
 ```
+
+The `docker-compose.dev.yml` file overrides the image references to build locally.
 
 ## Troubleshooting
 

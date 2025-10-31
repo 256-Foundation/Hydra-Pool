@@ -1,8 +1,6 @@
 services:
   hydrapool:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.hydrapool
+    image: ghcr.io/256foundation/hydrapool:latest
     environment:
       - RUST_LOG=info
     # Config is mounted from local file - edit docker/config.toml to customize
@@ -31,9 +29,7 @@ services:
         max-file: "3"
 
   hydrapool-cli:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.hydrapool
+    image: ghcr.io/256foundation/hydrapool:latest
     profiles: [cli]  # Prevents auto-start with docker compose up
     entrypoint: ["/usr/local/bin/hydrapool_cli", "--config", "/etc/hydrapool/config.toml"]
     volumes:
@@ -43,9 +39,7 @@ services:
       - hydrapool_network
 
   prometheus:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.prometheus
+    image: ghcr.io/256foundation/hydrapool-prometheus:latest
     depends_on:
       hydrapool:
         condition: service_healthy
@@ -74,9 +68,7 @@ services:
         max-file: "3"
 
   grafana:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.grafana
+    image: ghcr.io/256foundation/hydrapool-grafana:latest
     depends_on:
       prometheus:
         condition: service_healthy
