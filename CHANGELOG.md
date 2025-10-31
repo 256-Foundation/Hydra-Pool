@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Deprecated
+
+- Ansible templates are not being maintained. We might bring them back
+  in the future.
+
 ## [1.1.13] - 2025-10-30
 
 ### Added
