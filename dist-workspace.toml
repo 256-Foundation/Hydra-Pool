@@ -17,6 +17,5 @@ install-path = "CARGO_HOME"
 install-updater = false
 
 [[dist.extra-artifacts]]
-artifacts = ["docker/docker-compose.yml", "docker/config-example.yml"]
-build = [""]
-
+artifacts = ["docker/docker-compose.yml", "docker/config-example.toml"]
+build = ["true"]
