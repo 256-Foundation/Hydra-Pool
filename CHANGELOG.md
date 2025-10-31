@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.14] - 2025-10-31
+
+### Added
+
+- Cosign docker images
+- Add docker compose and config example to release
+- Add docker compose instruction as primary way to run pool
+
 ### Deprecated
 
 - Ansible templates are not being maintained. We might bring them back
@@ -46,8 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add debian package workflow using cargo-deb
 
-[unreleased]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.13...HEAD
-[1.1.12]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.12...v1.1.13
+[unreleased]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.14...HEAD
+[1.1.14]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.13...v1.1.4
+[1.1.13]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.12...v1.1.13
 [1.1.12]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.11...v1.1.12
 [1.1.11]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.10...v1.1.11
 [1.1.10]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.9...v1.1.10

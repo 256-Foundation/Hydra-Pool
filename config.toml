@@ -21,7 +21,7 @@ bootstrap_address = "bc1qypskemx80lznv4tjpnmpw9c5pgpy32fpkk3sw2"
 # fee = 200
 zmqpubhashblock = "tcp://127.0.0.1:28334"
 # The network can be "main", "testnet4" or "signet"
-network = "signet"
+network = "main"
 version_mask = "1fffe000"
 # The difficulty multiplier defines the window size for calculating payout proportions
 # See https://github.com/p2poolv2/p2poolv2/wiki/Difficult-Multiplier on how to choose this

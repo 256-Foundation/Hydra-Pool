@@ -68,10 +68,3 @@ assets = [
 conf-files = ["/etc/hydrapool/config.toml"]
 maintainer-scripts = "packages/debian/"
 systemd-units = { enable = false }
-
-[package.metadata.dist]
-# Include Docker compose files in releases
-extra-artifacts = [
-    "docker/docker-compose.yml",
-    "docker/config-example.toml",
-]
