@@ -38,23 +38,21 @@ limit on the size of the coinbase.
 We provide Dockerfile and docker compose files to run hydrapool using
 Docker as well.
 
-1. Download docker compose and pool config file
+### Download docker compose and pool config file
 
 ```bash
 curl --proto '=https' --tlsv1.2 -LsSf -o docker-compose.yml https://github.com/256foundation/hydrapool/releases/latest/download/docker-compose.yml
 curl --proto '=https' --tlsv1.2 -LsSf -o config.toml https://github.com/256foundation/hydrapool/releases/latest/download/config-example.toml
 ```
 
-2. Edit config.toml
-
+### Edit config.toml
 Edit the file to provide details for your own bitcoin node.
 
 At the very least you will need to edit bitcoinrpc, zmqpubhashblock
 and network (signet/main) to match your bitcoin node's settings. If
 you use main network, change the bootstrap_address too.
 
-2. Start pool
-
+### Start pool
 ```bash
 docker compose up -d docker-compose.yml
 ```
@@ -64,7 +62,9 @@ monitoring dashboard on port 3000. If you are running on localhost,
 `stratum://localhost:3333` and dashboard at
 `http://localhost::3000`.
 
-#### Pool Dashboard
+# Dashboards
+
+## Pool Dashboard
 
 The `Pool` dashboard shows the hashrate of the pool, the shares per
 second, max difficulty reached by any of the workers. It also charts
@@ -73,7 +73,7 @@ the hashrate distribution between users mining on the pool.
 
 ![Pool Dashboard Preview](./docs/images/pool_dashboard.png)
 
-#### Users and Hashrate Dashboard
+## Users and Hashrate Dashboard
 
 Th users dashboard shows the stats for a selected user. The current
 dashboard shows all users btcaddresses mining on the pool, and there
@@ -87,7 +87,7 @@ the top.
 
 ![Users Dashboard Preview](./docs/images/users_dashboard.png)
 
-### Public Dashboard
+## Public Dashboard
 
 To provide public facing dashboard, we recommend using nginx/apache as
 a reverse proxy and running the dashboard as a system service.
@@ -95,7 +95,7 @@ a reverse proxy and running the dashboard as a system service.
 Also see the section on securing the server for securing your API
 server.
 
-## Verify Docker Image Signatures
+# Verify Docker Image Signatures
 
 To verify docker images [install
 cosign](https://docs.sigstore.dev/cosign/system_config/installation/)
@@ -108,7 +108,7 @@ cosign verify \
 ```
 
 <a id="secure"></a>
-## Securing your Server
+# Securing your Server
 
 If you provide public access to your api server, you can require
 authentication to access the server. Edit the `auth_user` and
@@ -134,14 +134,12 @@ To update prometheus with your new credentials:
 ```bash
 cp prometheus/prometheus.yml docker/prometheus.yml
 ```
-
 2. Edit `docker/prometheus.yml` and change the username and password to match what was output by hydrapool_cli above:
 ```yaml
     basic_auth:
       username: '<USERNAME>'
       password: '<PASSWORD>'
 ```
-
 3. Restart the prometheus service:
 ```bash
 docker compose restart prometheus
@@ -150,7 +148,7 @@ docker compose restart prometheus
 Note: By default, prometheus uses the built-in configuration with credentials `hydrapool/hydrapool`. Creating a custom `docker/prometheus.yml` file overrides this default configuration.
 
 <a id="api"></a>
-## API Server
+# API Server
 
 When you start the mining pool an API server is also started on the
 port you specify in the config file.
