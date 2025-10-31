@@ -19,7 +19,7 @@ minimum_difficulty = 1
 #
 # This address receives payouts if a block is found in the first 10
 # seconds
-bootstrap_address = "bc1qypskemx80lznv4tjpnmpw9c5pgpy32fpkk3sw2"
+bootstrap_address = "tb1qyazxde6558qj6z3d9np5e6msmrspwpf6k0qggk"
 
 # Optional: Donation to developers (in basis points, 100 = 1%)
 # donation_address = "<your donation address here>"

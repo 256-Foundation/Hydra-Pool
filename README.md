@@ -33,90 +33,59 @@ limit on the size of the coinbase.
 <a id="run"></a>
 # Running Your Own Hydrapool Instance
 
-## Install Hydrapool
+## Run with Docker
+
+We provide Dockerfile and docker compose files to run hydrapool using
+Docker as well.
+
+1. Download docker compose and pool config file
 
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/256-Foundation/Hydra-Pool/releases/latest/download/hydrapool-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf -o docker-compose.yml https://github.com/256foundation/hydrapool/releases/latest/download/docker-compose.yml
+curl --proto '=https' --tlsv1.2 -LsSf -o config.toml https://github.com/256foundation/hydrapool/releases/latest/download/config-example.toml
 ```
 
-The above will install two binaries in your path:
+2. Edit config.toml
 
-1. `hydrapool` - the binary to start the pool.
-2. `hydrapool_cli` - a utility to query the state of the pool, generate authentication tokens etc.
+Edit the file to provide details for your own bitcoin node.
 
-Both binaries come with the `--help` option that document the other
-options and commands they support.
+At the very least you will need to edit bitcoinrpc, zmqpubhashblock
+and network (signet/main) to match your bitcoin node's settings. If
+you use main network, change the bootstrap_address too.
 
-Binaries are available on the
-[releases](https://github.com/256-Foundation/Hydra-Pool/releases)
-page. We provide Linux, Windows and MacOS binaries. Go to releases
-page to access an older release.
-
-## Start Hydrapool
-
-Download the config file from
-[config.toml](https://github.com/256-Foundation/Hydra-Pool/blob/main/config.toml)
-and edit it for your addresses, donation and fee amounts as well as
-your bitcoin RPC ports and credentials. Also consider securing your
-server with new API Server credentials. See [Securing Your
-Server](#secure).
-
-Once your config.toml file is ready, start the pool as:
-
-```
-hydrapool --config config.toml
-```
-
-We recommend running a systemd service for a pool you want others to
-access. A sample service is provided as
-[hydrapool.service](hydrapool.service).
-
-### Start Dashboard
-
-To verify images [install cosign](https://docs.sigstore.dev/cosign/system_config/installation/)
-and then verify using:
+2. Start pool
 
 ```bash
-cosign verify \
-    --certificate-identity-regexp=github.com/256foundation \
-    ghcr.io/256-foundation/hydrapool:<TAG>
+docker compose up -d docker-compose.yml
 ```
 
-Hydrapool ships with a prometheus/grafana dashboard to track the
-hashrate of the pool and individual users and ASICs miners.
-
-The easiest way to run the dashboard is using docker. There is a
-docker compose file for prometheus.
-
-```
-git clone https://github.com/256-foundation/Hydra-Pool/
-cd Hydra-Pool
-cd docker
-docker compose up -d
-```
-
-The above will make a grafana dashboard available on
-`localhost:3000`. You need to click on `dashboards` menu on the
-left. There are two dashboards provided out of the box. `Pool` and
-`Users and Hashrate`.
+The above will start hydrapool stratum server on port 3333. A
+monitoring dashboard on port 3000. If you are running on localhost,
+`stratum://localhost:3333` and dashboard at
+`http://localhost::3000`.
 
 #### Pool Dashboard
 
 The `Pool` dashboard shows the hashrate of the pool, the shares per
 second, max difficulty reached by any of the workers. It also charts
-the total number of users and workers in the pool over time.
+the total number of users and workers in the pool over time and shows
+the hashrate distribution between users mining on the pool.
+
+![Pool Dashboard Preview](./docs/images/pool_dashboard.png)
 
 #### Users and Hashrate Dashboard
 
-This dashboard shows the stats for a selected user. For privacy, the
-user needs to enter their bitcoin address used in their ASIC
-configuration. There is a text input box at the top of the dashboard
-where this btc address has to be entered.
+Th users dashboard shows the stats for a selected user. The current
+dashboard shows all users btcaddresses mining on the pool, and there
+is a private dashboard where you have to provide the user's btcaddress
+to view stats. By default the public dashboard is used.
 
-Once the user has provided their btc address, they will be shown the
-total hashrate of the all their workers as well as individual hashrate
-for all their workers. They can also filter their workers by selecting
-specific workers from the workers drop down on the top.
+The dashboard shows the hashrate of the all their workers as well as
+individual hashrate for all their workers. They can also filter their
+workers by selecting specific workers from the workers drop down on
+the top.
+
+![Users Dashboard Preview](./docs/images/users_dashboard.png)
 
 ### Public Dashboard
 
@@ -126,28 +95,30 @@ a reverse proxy and running the dashboard as a system service.
 Also see the section on securing the server for securing your API
 server.
 
-## Config
+## Verify Docker Image Signatures
 
-Before starting the pool, make sure you edit config.toml to point to
-your bitcoin node.
+To verify docker images [install
+cosign](https://docs.sigstore.dev/cosign/system_config/installation/)
+and then verify using:
 
-You will also need to provide a bootstrap address. This address gets
-the payout if in the extremely unlikely case the first few shares find
-a bitcoin block. We build a new template every 10 seconds, so this
-address can get lucky in the first 10 seconds.
-
-We recommend pointing a single machine and warm up the pool for 10
-seconds before pointing more hashrate to the pool.
+```bash
+cosign verify \
+    --certificate-identity-regexp=github.com/256foundation \
+    ghcr.io/256-foundation/hydrapool:<TAG>
+```
 
 <a id="secure"></a>
 ## Securing your Server
 
-At the very least, change the API Server password in your
-config.toml. We provide a command line tool to generate the salt and
-hashed password to use in your config file.
+If you provide public access to your api server, you can require
+authentication to access the server. Edit the `auth_user` and
+`auth_token` in config.toml.
+
+We provide a command line tool to generate the salt and hashed
+password to use in your config file.
 
 ```
-hydrapool_cli gen-auth <USERNAME> <PASSWORD>
+docker compose run --rm hydrapool-cli gen-auth <USERNAME> <PASSWORD>
 ```
 
 The above will generate config lines for pasting into your
@@ -185,9 +156,6 @@ The above URL accepts optional query parameters `start_time` and
 `end_time` in RFC3339 format, e.g. `1996-12-19T16:39:57-08:00` to
 limit the range of pplns shares to download.
 
-We will add new config options soon to rate limit the API Server for
-easier administration of the server.
-
 To expose the API Server to public, we recommend using nginx as a
 reverse proxy for the port, just like for the prometheus/grafana
 dashboard.
@@ -210,22 +178,28 @@ Then run from target directory.
 ./target/release/hydrapool
 ```
 
-## Run with Docker
-
-We provide Dockerfile and docker compose files to run hydrapool using
-Docker as well.
+## Install Hydrapool Binaries
 
 ```bash
-docker compose build hydrapool
-docker compose --profile hydrapool up
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/256-Foundation/Hydra-Pool/releases/latest/download/hydrapool-installer.sh | sh
 ```
 
-Using the profile option we can start hydrapool along with prometheus
-and grafana.
+The above will install two binaries in your path:
 
-If you don't provide the profile option, hydrapool won't be started
-and only prometheus and grafana will start as normal.
+1. `hydrapool` - the binary to start the pool.
+2. `hydrapool_cli` - a utility to query the state of the pool, generate authentication tokens etc.
 
-When using docker, be careful that you need to build docker image
-after changes to config. Also you need to make sure your bitcoin RPC
-port is accessible from the docker container.
+Both binaries come with the `--help` option that document the other
+options and commands they support.
+
+Binaries are available on the
+[releases](https://github.com/256-Foundation/Hydra-Pool/releases)
+page. We provide Linux, Windows and MacOS binaries. Go to releases
+page to access an older release.
+
+To run dashboard, we still recommned using docker
+
+```
+docker compose up -d ghcr.io/256foundation/hydrapool-prometheus
+docker compose up -d ghcr.io/256foundation/hydrapool-grafana
+```
