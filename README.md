@@ -73,6 +73,15 @@ access. A sample service is provided as
 
 ### Start Dashboard
 
+To verify images [install cosign](https://docs.sigstore.dev/cosign/system_config/installation/)
+and then verify using:
+
+```bash
+cosign verify \
+    --certificate-identity-regexp=github.com/256foundation \
+    ghcr.io/256-foundation/hydrapool:<TAG>
+```
+
 Hydrapool ships with a prometheus/grafana dashboard to track the
 hashrate of the pool and individual users and ASICs miners.
 
