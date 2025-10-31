@@ -1,10 +1,13 @@
 name: Build and Push Docker Images
 permissions:
-  "contents": "write"
+  contents: write
+  packages: write
+  id-token: write
 
 on:
   release:
     types: [published]
+  workflow_call:
   workflow_dispatch:
 
 env:
