@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ansible templates are not being maintained. We might bring them back
   in the future.
+- Enable running workflows from github tags page.
 
 ## [1.1.13] - 2025-10-30
 

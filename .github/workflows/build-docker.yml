@@ -5,9 +5,7 @@ permissions:
 on:
   release:
     types: [published]
-  push:
-    branches:
-      - docker-one-click
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
