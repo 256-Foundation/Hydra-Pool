@@ -1,6 +1,16 @@
 FROM prom/prometheus:v3.6.0
 
-# Copy custom prometheus configuration
+# Copy default prometheus configuration
 COPY ./prometheus/prometheus.yml /etc/prometheus/prometheus.yml
 
-# The base image already sets the correct entrypoint and command
+# Copy and set up entrypoint script to support optional config override
+COPY ./docker/prometheus-entrypoint.sh /usr/local/bin/prometheus-entrypoint.sh
+RUN chmod +x /usr/local/bin/prometheus-entrypoint.sh
+
+# Override entrypoint to support custom config fallback
+ENTRYPOINT ["/usr/local/bin/prometheus-entrypoint.sh"]
+
+# Default command arguments (can be overridden in docker-compose)
+CMD ["--storage.tsdb.path=/prometheus", \
+     "--web.console.libraries=/usr/share/prometheus/console_libraries", \
+     "--web.console.templates=/usr/share/prometheus/consoles"]
