@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.16] - 2025-10-31
+
+### Fixed
+
+- Prometheus docker image
+
+## [1.1.15] - 2025-10-31
+
+### Fixed
+
+- Add extra artifacts for config and docker compose to release
+
 ## [1.1.14] - 2025-10-31
 
 ### Added
@@ -55,8 +67,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add debian package workflow using cargo-deb
 
-[unreleased]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.14...HEAD
-[1.1.14]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.13...v1.1.4
+[unreleased]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.16...HEAD
+[1.1.16]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.15...v1.1.16
+[1.1.15]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.14...v1.1.15
+[1.1.14]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.13...v1.1.14
 [1.1.13]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.12...v1.1.13
 [1.1.12]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.11...v1.1.12
 [1.1.11]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.10...v1.1.11

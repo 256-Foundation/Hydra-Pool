@@ -4,8 +4,7 @@ FROM prom/prometheus:v3.6.0
 COPY ./prometheus/prometheus.yml /etc/prometheus/prometheus.yml
 
 # Copy and set up entrypoint script to support optional config override
-COPY ./docker/prometheus-entrypoint.sh /usr/local/bin/prometheus-entrypoint.sh
-RUN chmod +x /usr/local/bin/prometheus-entrypoint.sh
+COPY --chmod=755 ./docker/prometheus-entrypoint.sh /usr/local/bin/prometheus-entrypoint.sh
 
 # Override entrypoint to support custom config fallback
 ENTRYPOINT ["/usr/local/bin/prometheus-entrypoint.sh"]
