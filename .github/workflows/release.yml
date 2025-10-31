@@ -294,14 +294,3 @@ jobs:
         with:
           persist-credentials: false
           submodules: recursive
-
-  # Build and push Docker images after release is published
-  build-docker:
-    needs: [host]
-    if: ${{ needs.host.result == 'success' }}
-    uses: ./.github/workflows/build-docker.yml
-    secrets: inherit
-    permissions:
-      contents: write
-      packages: write
-      id-token: write

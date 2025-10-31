@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.18] - 2025-10-31
+
+### Fixed
+
+- Change how we trigger docker build
+
+
 ## [1.1.17] - 2025-10-31
 
 ### Fixed
@@ -73,7 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add debian package workflow using cargo-deb
 
-[unreleased]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.17...HEAD
+[unreleased]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.18...HEAD
+[1.1.16]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.17...v1.1.18
 [1.1.16]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.16...v1.1.17
 [1.1.16]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.15...v1.1.16
 [1.1.15]: https://github.com/256-foundation/Hydra-Pool/compare/v1.1.14...v1.1.15
