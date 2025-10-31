@@ -36,7 +36,7 @@ limit on the size of the coinbase.
 ## Run with Docker
 
 We provide Dockerfile and docker compose files to run hydrapool using
-Docker as well.
+docker.
 
 ### Download docker compose and pool config file
 
