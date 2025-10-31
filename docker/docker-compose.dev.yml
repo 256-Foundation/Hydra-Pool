@@ -1,0 +1,27 @@
+# Docker Compose override for local development
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+services:
+  hydrapool:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.hydrapool
+    image: hydrapool:dev
+
+  hydrapool-cli:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.hydrapool
+    image: hydrapool:dev
+
+  prometheus:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.prometheus
+    image: hydrapool-prometheus:dev
+
+  grafana:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.grafana
+    image: hydrapool-grafana:dev

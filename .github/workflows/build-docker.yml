@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  ORGANIZATION: 256-foundation
+  ORGANIZATION: 256foundation
 
 jobs:
   build:
@@ -69,6 +69,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
           labels: |
             org.opencontainers.image.description=Hydrapool ${{ matrix.component }} image
             org.opencontainers.image.vendor=${{ env.ORGANIZATION }}
