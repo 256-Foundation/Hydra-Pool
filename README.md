@@ -54,7 +54,7 @@ you use main network, change the bootstrap_address too.
 
 ### Start pool
 ```bash
-docker compose -f docker-compose.yml up -d
+docker compose -f docker-compose.yml up
 ```
 
 The above will start hydrapool stratum server on port 3333. A
