@@ -24,12 +24,6 @@ reasons, workers are limited by your hardware.
    accounting and payout schemes.
 6. Open source with GPlv3. Feel free to extend and/or make changes.
 
-## Limitation
-
-Currently we limit 20 users, but this limit will be removed in the
-future. This limit is in place to allow all older hardware that has a
-limit on the size of the coinbase.
-
 <a id="run"></a>
 # Running Your Own Hydrapool Instance
 
@@ -105,6 +99,47 @@ and then verify using:
 cosign verify \
     --certificate-identity-regexp=github.com/256foundation \
     ghcr.io/256-foundation/hydrapool:<TAG>
+```
+
+## Configuring `blockmaxweight` on Bitcoin
+
+When mining with Hydrapool you need to leave enough room in the block
+for that coinbase transaction.  Otherwise, Bitcoin Core may reject
+your block template for exceeding the default maximum block weight of
+**4,000,000 weight units (WU)**.
+
+The parameter `blockmaxweight` in your `bitcoin.conf` limits how much
+of the block is used by regular transactions. The remaining weight
+ensures the coinbase transaction fits without exceeding consensus
+limits.
+
+The following table provides approximate values for different numbers
+of **P2PKH** outputs in the coinbase. Adjust as needed for your own
+setup.
+
+| # of P2PKH outputs | Approx. coinbase size | Approx. coinbase weight | Suggested blockmaxweight |
+|--------------------:|----------------------:|-------------------------:|--------------------------:|
+| 20                 | ~732 bytes            | ~2,928 WU                | `3997000` |
+| 100                | ~3,452 bytes          | ~13,808 WU               | `3986000` |
+| 200                | ~6,852 bytes          | ~27,408 WU               | `3972500` |
+| 500                | ~17,052 bytes         | ~68,208 WU               | `3930000` |
+| 1000               | ~34,052 bytes         | ~136,208 WU              | `3860000` |
+
+**Notes:**
+- Default Bitcoin Core `blockmaxweight` = **4,000,000**.
+- These estimates assume a standard **P2PKH** output (~34 bytes each)
+  and a short coinbase scriptSig.
+- If your coinbase uses **SegWit outputs (P2WPKH/P2WSH)**, you can
+  reserve slightly less space.
+- You can inspect your actual coinbase transaction size using
+  `getblocktemplate` → `coinbasevalue` / `coinbasetxn` or by decoding
+  it with `decoderawtransaction`.
+
+Example configuration for `bitcoin.conf`:
+
+```ini
+# Reserve space for up to 500 P2PKH outputs in the coinbase
+blockmaxweight=3930000
 ```
 
 <a id="secure"></a>
