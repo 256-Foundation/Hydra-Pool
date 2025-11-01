@@ -101,7 +101,7 @@ cosign verify \
     ghcr.io/256-foundation/hydrapool:<TAG>
 ```
 
-## Configuring `blockmaxweight` on Bitcoin
+# Configuring `blockmaxweight` on Bitcoin
 
 When mining with Hydrapool you need to leave enough room in the block
 for that coinbase transaction.  Otherwise, Bitcoin Core may reject
